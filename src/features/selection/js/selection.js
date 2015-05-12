@@ -861,7 +861,7 @@
                 $elm.addClass('ui-grid-disable-selection');
                 $elm.on('touchstart', touchStart);
                 $elm.on('touchend', touchEnd);
-                $elm.on('mousedown', selectCells);
+                $elm.on('click', selectCells);
 
                 $scope.registered = true;
               }
@@ -873,7 +873,7 @@
 
                 $elm.off('touchstart', touchStart);
                 $elm.off('touchend', touchEnd);
-                $elm.off('mousedown', selectCells);
+                $elm.off('click', selectCells);
 
                 $scope.registered = false;
               }
