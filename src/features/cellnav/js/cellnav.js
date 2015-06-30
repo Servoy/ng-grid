@@ -806,7 +806,7 @@
 
 
 
-              uiGridCtrl.focus();
+//              uiGridCtrl.focus();
 
 
 
