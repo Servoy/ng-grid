@@ -468,7 +468,7 @@
           }
 
           if (evt.keyCode === uiGridConstants.keymap.DOWN && 
-        		  !(evt.ctrlKey || evt.altKey)) {
+                !(evt.ctrlKey || evt.altKey)) {
             return uiGridCellNavConstants.direction.DOWN;
           }
 

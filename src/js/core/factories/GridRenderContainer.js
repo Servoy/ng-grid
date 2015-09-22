@@ -756,26 +756,26 @@ angular.module('ui.grid')
     }
 
     if (self.name === 'body') {
-    	self.hasHScrollbar = self.grid.options.enableHorizontalScrollbar !== uiGridConstants.scrollbars.NEVER;
-    	if (!self.grid.isRTL()) {
-    		if (!self.grid.hasRightContainerColumns()) {
-    			self.hasVScrollbar = self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER;
-    		}
-    	}
-    	else {
-    		if (!self.grid.hasLeftContainerColumns()) {
-    			self.hasVScrollbar = self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER;
-    		}
-    	}
+       self.hasHScrollbar = self.grid.options.enableHorizontalScrollbar !== uiGridConstants.scrollbars.NEVER;
+       if (!self.grid.isRTL()) {
+          if (!self.grid.hasRightContainerColumns()) {
+             self.hasVScrollbar = self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER;
+          }
+       }
+       else {
+          if (!self.grid.hasLeftContainerColumns()) {
+             self.hasVScrollbar = self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER;
+          }
+       }
     }
     else if (self.name === 'left') {
-    	self.hasVScrollbar = self.grid.isRTL() ? self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER : false;
+       self.hasVScrollbar = self.grid.isRTL() ? self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER : false;
     }
     else {
-    	self.hasVScrollbar = !self.grid.isRTL() ? self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER : false;
+       self.hasVScrollbar = !self.grid.isRTL() ? self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER : false;
     }
 
-    styles['overflow-x'] = self.hasHScrollbar ? 'scroll' : 'hidden';
+    styles['overflow-x'] = self.hasHScrollbar ? (self.grid.options.enableHorizontalScrollbar === uiGridConstants.scrollbars.WHEN_NEEDED ? 'auto' : 'scroll') :  'hidden';
     styles['overflow-y'] = self.hasVScrollbar ? (self.grid.options.enableVerticalScrollbar === uiGridConstants.scrollbars.WHEN_NEEDED ? 'auto' : 'scroll') : 'hidden';
 
 
