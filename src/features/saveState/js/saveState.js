@@ -6,7 +6,10 @@
    * @name ui.grid.saveState
    * @description
    *
-   *  # ui.grid.saveState
+   * # ui.grid.saveState
+   *
+   * <div class="alert alert-success" role="alert"><strong>Stable</strong> This feature is stable. There should no longer be breaking api changes without a deprecation warning.</div>
+   *
    * This module provides the ability to save the grid state, and restore
    * it when the user returns to the page.
    *
@@ -357,7 +360,16 @@
             }
 
             if ( grid.options.saveFilter ){
-              savedColumn.filters = angular.copy ( column.filters );
+              savedColumn.filters = [];
+              column.filters.forEach( function( filter ){
+                var copiedFilter = {};
+                angular.forEach( filter, function( value, key) {
+                  if ( key !== 'condition' && key !== '$$hashKey' && key !== 'placeholder'){
+                    copiedFilter[key] = value;
+                  }
+                });
+                savedColumn.filters.push(copiedFilter);
+              });
             }
 
             if ( !!grid.api.pinning && grid.options.savePinning ){
@@ -518,10 +530,10 @@
          * @param {object} columnsState the list of columns we had before, with their state
          */
         restoreColumns: function( grid, columnsState ){
+          var isSortChanged = false;
+
           columnsState.forEach( function( columnState, index ) {
             var currentCol = grid.getColumn( columnState.name );
-
-
 
             if ( currentCol && !grid.isRowHeaderColumn(currentCol) ){
               if ( grid.options.saveVisible &&
@@ -540,12 +552,17 @@
                    !angular.equals(currentCol.sort, columnState.sort) &&
                    !( currentCol.sort === undefined && angular.isEmpty(columnState.sort) ) ){
                 currentCol.sort = angular.copy( columnState.sort );
-                grid.api.core.raise.sortChanged();
+                isSortChanged = true;
               }
 
               if ( grid.options.saveFilter &&
                    !angular.equals(currentCol.filters, columnState.filters ) ){
-                currentCol.filters = angular.copy( columnState.filters );
+                columnState.filters.forEach( function( filter, index ){
+                  angular.extend( currentCol.filters[index], filter );
+                  if ( typeof(filter.term) === 'undefined' || filter.term === null ){
+                    delete currentCol.filters[index].term;
+                  }
+                });
                 grid.api.core.raise.filterChanged();
               }
 
@@ -562,6 +579,10 @@
               }
             }
           });
+
+          if ( isSortChanged ) {
+            grid.api.core.raise.sortChanged( grid, grid.getColumnSorting() );
+          }
         },
 
 

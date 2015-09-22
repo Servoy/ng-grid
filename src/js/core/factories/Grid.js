@@ -126,6 +126,10 @@ angular.module('ui.grid')
      */
     self.scrollDirection = uiGridConstants.scrollDirection.NONE;
 
+    //if true, grid will not respond to any scroll events
+    self.disableScrolling = false;
+
+
     function vertical (scrollEvent) {
       self.isScrollingVertically = false;
       self.api.core.raise.scrollEnd(scrollEvent);
@@ -247,7 +251,7 @@ angular.module('ui.grid')
      * @returns {promise} promise that is resolved when render completes?
      *
      */
-    self.api.registerMethod( 'core', 'refreshRows', this.queueRefresh );
+    self.api.registerMethod( 'core', 'queueRefresh', this.queueRefresh );
 
     /**
      * @ngdoc function
@@ -313,7 +317,8 @@ angular.module('ui.grid')
      * @param {number} priority the priority of this processor.  In general we try to do them in 100s to leave room
      * for other people to inject rows processors at intermediate priorities.  Lower priority rowsProcessors run earlier.
      *
-     * At present allRowsVisible is running at 50, filter is running at 100, sort is at 200, grouping at 400, selectable rows at 500, pagination at 900 (pagination will generally want to be last)
+     * At present allRowsVisible is running at 50, sort manipulations running at 60-65, filter is running at 100,
+     * sort is at 200, grouping and treeview at 400-410, selectable rows at 500, pagination at 900 (pagination will generally want to be last)
      */
     self.api.registerMethod( 'core', 'registerRowsProcessor', this.registerRowsProcessor  );
 
@@ -373,13 +378,15 @@ angular.module('ui.grid')
      * getColumnSorting, which is an array of gridColumns
      * that have sorting on them, sorted in priority order.
      *
-     * @param {Grid} grid the grid
-     * @param {array} sortColumns an array of columns with
-     * sorts on them, in priority order
+     * @param {$scope} scope The scope of the controller. This is used to deregister this event when the scope is destroyed.
+     * @param {Function} callBack Will be called when the event is emited. The function passes back an array of columns with
+     * sorts on them, in priority order.
      *
      * @example
      * <pre>
-     *      gridApi.core.on.sortChanged( grid, sortColumns );
+     *      gridApi.core.on.sortChanged( $scope, function(sortColumns){
+     *        // do something
+     *      });
      * </pre>
      */
     self.api.registerEvent( 'core', 'sortChanged' );
@@ -390,8 +397,9 @@ angular.module('ui.grid')
      * @methodOf  ui.grid.core.api:PublicApi
      * @description The visibility of a column has changed,
      * the column itself is passed out as a parameter of the event.
-     *
-     * @param {GridCol} column the column that changed
+     * 
+     * @param {$scope} scope The scope of the controller. This is used to deregister this event when the scope is destroyed.
+     * @param {Function} callBack Will be called when the event is emited. The function passes back the GridCol that has changed.
      *
      * @example
      * <pre>
@@ -423,15 +431,16 @@ angular.module('ui.grid')
      * @name clearAllFilters
      * @methodOf ui.grid.core.api:PublicApi
      * @description Clears all filters and optionally refreshes the visible rows.
-     * @params {object} refreshRows Defaults to true.
-     * @params {object} clearConditions Defaults to false.
-     * @params {object} clearFlags Defaults to false.
+     * @param {object} refreshRows Defaults to true.
+     * @param {object} clearConditions Defaults to false.
+     * @param {object} clearFlags Defaults to false.
      * @returns {promise} If `refreshRows` is true, returns a promise of the rows refreshing.
      */
     self.api.registerMethod('core', 'clearAllFilters', this.clearAllFilters);
 
     self.registerDataChangeCallback( self.columnRefreshCallback, [uiGridConstants.dataChange.COLUMN]);
     self.registerDataChangeCallback( self.processRowsCallback, [uiGridConstants.dataChange.EDIT]);
+    self.registerDataChangeCallback( self.updateFooterHeightCallback, [uiGridConstants.dataChange.OPTIONS]);
 
     self.registerStyleComputation({
       priority: 10,
@@ -646,6 +655,20 @@ angular.module('ui.grid')
 
   /**
    * @ngdoc function
+   * @name updateFooterHeightCallback
+   * @methodOf ui.grid.class:Grid
+   * @description recalculates the footer height,
+   * registered as a dataChangeCallback on uiGridConstants.dataChange.OPTIONS
+   * @param {string} name column name
+   */
+  Grid.prototype.updateFooterHeightCallback = function updateFooterHeightCallback( grid ){
+    grid.footerHeight = grid.calcFooterHeight();
+    grid.columnFooterHeight = grid.calcColumnFooterHeight();
+  };
+
+
+  /**
+   * @ngdoc function
    * @name getColumn
    * @methodOf ui.grid.class:Grid
    * @description returns a grid column for the column name
@@ -706,7 +729,6 @@ angular.module('ui.grid')
           colDef.type = gridUtil.guessType(self.getCellValue(firstRow, col));
         }
         else {
-          gridUtil.logWarn('Unable to assign type from data, so defaulting to string');
           colDef.type = 'string';
         }
       }
@@ -884,26 +906,26 @@ angular.module('ui.grid')
  */
   Grid.prototype.preCompileCellTemplates = function() {
     var self = this;
-    this.columns.forEach(function (col) {
+
+    var preCompileTemplate = function( col ) {
       var html = col.cellTemplate.replace(uiGridConstants.MODEL_COL_FIELD, self.getQualifiedColField(col));
       html = html.replace(uiGridConstants.COL_FIELD, 'grid.getCellValue(row, col)');
-
-      if (col.cellTooltip === false){
-        html = html.replace(uiGridConstants.TOOLTIP, '');
-      } else {
-        // gridColumn will have made sure that the col either has false or a function for this value
-        if (col.cellFilter){
-          html = html.replace(uiGridConstants.TOOLTIP, 'title="{{col.cellTooltip(row, col) | ' + col.cellFilter + '}}"');
-        } else {
-          html = html.replace(uiGridConstants.TOOLTIP, 'title="{{col.cellTooltip(row, col)}}"');
-        }
-      }
 
       var compiledElementFn = $compile(html);
       col.compiledElementFn = compiledElementFn;
 
       if (col.compiledElementFnDefer) {
         col.compiledElementFnDefer.resolve(col.compiledElementFn);
+      }
+    };
+
+    this.columns.forEach(function (col) {
+      if ( col.cellTemplate ){
+        preCompileTemplate( col );
+      } else if ( col.cellTemplatePromise ){
+        col.cellTemplatePromise.then( function() {
+          preCompileTemplate( col );
+        });
       }
     });
   };
@@ -955,7 +977,7 @@ angular.module('ui.grid')
 
   /**
    * @ngdoc function
-   * @name hasLeftContainer
+   * @name hasRightContainer
    * @methodOf ui.grid.class:Grid
    * @description returns true if rightContainer exists
    */
@@ -982,51 +1004,14 @@ angular.module('ui.grid')
     //field was required in 2.x.  now name is required
     if (colDef.name === undefined && colDef.field !== undefined) {
       // See if the column name already exists:
-      var foundName = self.getColumn(colDef.field);
-
-      // If a column with this name already  exists, we will add an incrementing number to the end of the new column name
-      if (foundName) {
-        // Search through the columns for names in the format: <name><1, 2 ... N>, i.e. 'Age1, Age2, Age3',
-        var nameRE = new RegExp('^' + colDef.field + '(\\d+)$', 'i');
-
-        var foundColumns = self.columns.filter(function (column) {
-          // Test against the displayName, as that's what'll have the incremented number
-          return nameRE.test(column.displayName);
-        })
-        // Sort the found columns by the end-number
-        .sort(function (a, b) {
-          if (a === b) {
-            return 0;
-          }
-          else {
-            var numA = a.displayName.match(nameRE)[1];
-            var numB = b.displayName.match(nameRE)[1];
-
-            return parseInt(numA, 10) > parseInt(numB, 10) ? 1 : -1;
-          }
-        });
-
-        // Not columns found, so start with number "2"
-        if (foundColumns.length === 0) {
-          colDef.name = colDef.field + '2';
-        }
-        else {
-          // Get the number from the final column
-          var lastNum = foundColumns[foundColumns.length-1].displayName.match(nameRE)[1];
-
-          // Make sure to parse to an int
-          lastNum = parseInt(lastNum, 10);
-
-          // Add 1 to the number from the last column and tack it on to the field to be the name for this new column
-          colDef.name = colDef.field + (lastNum + 1);
-        }
+      var newName = colDef.field,
+        counter = 2;
+      while (self.getColumn(newName)) {
+        newName = colDef.field + counter.toString();
+        counter++;
       }
-      // ... otherwise just use the field as the column name
-      else {
-        colDef.name = colDef.field;
-      }
+      colDef.name = newName;
     }
-
   };
 
   // Return a list of items that exist in the `n` array but not the `o` array. Uses optional property accessors passed as third & fourth parameters
@@ -1835,7 +1820,9 @@ angular.module('ui.grid')
    * @param {GridColumn} col Column to access
    */
   Grid.prototype.getCellValue = function getCellValue(row, col){
-    if (this.options.flatEntityAccess && col.field){
+    if ( typeof(row.entity[ '$$' + col.uid ]) !== 'undefined' ) {
+      return row.entity[ '$$' + col.uid].rendered;
+    } else if (this.options.flatEntityAccess && typeof(col.field) !== 'undefined' ){
       return row.entity[col.field];
     } else {
       if (!col.cellValueGetterCache) {
@@ -1844,6 +1831,30 @@ angular.module('ui.grid')
 
       return col.cellValueGetterCache(row);
     }
+  };
+
+  /**
+   * @ngdoc function
+   * @name getCellDisplayValue
+   * @methodOf ui.grid.class:Grid
+   * @description Gets the displayed value of a cell after applying any the `cellFilter`
+   * @param {GridRow} row Row to access
+   * @param {GridColumn} col Column to access
+   */
+  Grid.prototype.getCellDisplayValue = function getCellDisplayValue(row, col) {
+    if ( !col.cellDisplayGetterCache ) {
+      var custom_filter = col.cellFilter ? " | " + col.cellFilter : "";
+
+      if (typeof(row.entity['$$' + col.uid]) !== 'undefined') {
+        col.cellDisplayGetterCache = $parse(row.entity['$$' + col.uid].rendered + custom_filter);
+      } else if (this.options.flatEntityAccess && typeof(col.field) !== 'undefined') {
+        col.cellDisplayGetterCache = $parse(row.entity[col.field] + custom_filter);
+      } else {
+        col.cellDisplayGetterCache = $parse(row.getEntityQualifiedColField(col) + custom_filter);
+      }
+    }
+
+    return col.cellDisplayGetterCache(row);
   };
 
 
@@ -1993,7 +2004,7 @@ angular.module('ui.grid')
    * @name refresh
    * @methodOf ui.grid.class:Grid
    * @description Refresh the rendered grid on screen.
-   * @params {boolean} [rowsAltered] Optional flag for refreshing when the number of rows has changed.
+   * @param {boolean} [rowsAltered] Optional flag for refreshing when the number of rows has changed.
    */
   Grid.prototype.refresh = function refresh(rowsAltered) {
     var self = this;
@@ -2039,7 +2050,7 @@ angular.module('ui.grid')
    * @name refreshCanvas
    * @methodOf ui.grid.class:Grid
    * @description Builds all styles and recalculates much of the grid sizing
-   * @params {object} buildStyles optional parameter.  Use TBD
+   * @param {object} buildStyles optional parameter.  Use TBD
    * @returns {promise} promise that is resolved when the canvas
    * has been refreshed
    *
@@ -2065,8 +2076,8 @@ angular.module('ui.grid')
         }
 
         if (container.header || container.headerCanvas) {
-          container.explicitHeaderHeight = null;
-          container.explicitHeaderCanvasHeight = null;
+          container.explicitHeaderHeight = container.explicitHeaderHeight || null;
+          container.explicitHeaderCanvasHeight = container.explicitHeaderCanvasHeight || null;
 
           containerHeadersToRecalc.push(container);
         }
@@ -2102,6 +2113,12 @@ angular.module('ui.grid')
         var maxHeaderHeight = 0;
         var maxHeaderCanvasHeight = 0;
         var i, container;
+        var getHeight = function(oldVal, newVal){
+          if ( oldVal !== newVal){
+            rebuildStyles = true;
+          }
+          return newVal;
+        };
         for (i = 0; i < containerHeadersToRecalc.length; i++) {
           container = containerHeadersToRecalc[i];
 
@@ -2111,12 +2128,7 @@ angular.module('ui.grid')
           }
 
           if (container.header) {
-            var oldHeaderHeight = container.headerHeight;
-            var headerHeight = container.headerHeight = parseInt(gridUtil.outerElementHeight(container.header), 10);
-
-            if (oldHeaderHeight !== headerHeight) {
-              rebuildStyles = true;
-            }
+            var headerHeight = container.headerHeight = getHeight(container.headerHeight, parseInt(gridUtil.outerElementHeight(container.header), 10));
 
             // Get the "inner" header height, that is the height minus the top and bottom borders, if present. We'll use it to make sure all the headers have a consistent height
             var topBorder = gridUtil.getBorderSize(container.header, 'top');
@@ -2135,12 +2147,8 @@ angular.module('ui.grid')
           }
 
           if (container.headerCanvas) {
-            var oldHeaderCanvasHeight = container.headerCanvasHeight;
-            var headerCanvasHeight = container.headerCanvasHeight = parseInt(gridUtil.outerElementHeight(container.headerCanvas), 10);
+            var headerCanvasHeight = container.headerCanvasHeight = getHeight(container.headerCanvasHeight, parseInt(gridUtil.outerElementHeight(container.headerCanvas), 10));
 
-            if (oldHeaderCanvasHeight !== headerCanvasHeight) {
-              rebuildStyles = true;
-            }
 
             // If the header doesn't have an explicit canvas height, save the largest header canvas height for use later
             //   Explicit header heights are based off of the max we are calculating here. We never want to base the max on something we're setting explicitly
@@ -2167,7 +2175,7 @@ angular.module('ui.grid')
             maxHeaderHeight > 0 && typeof(container.headerHeight) !== 'undefined' && container.headerHeight !== null &&
             (container.explicitHeaderHeight || container.headerHeight < maxHeaderHeight)
           ) {
-            container.explicitHeaderHeight = maxHeaderHeight;
+            container.explicitHeaderHeight = getHeight(container.explicitHeaderHeight, maxHeaderHeight);
           }
 
           // Do the same as above except for the header canvas
@@ -2175,7 +2183,7 @@ angular.module('ui.grid')
             maxHeaderCanvasHeight > 0 && typeof(container.headerCanvasHeight) !== 'undefined' && container.headerCanvasHeight !== null &&
             (container.explicitHeaderCanvasHeight || container.headerCanvasHeight < maxHeaderCanvasHeight)
           ) {
-            container.explicitHeaderCanvasHeight = maxHeaderCanvasHeight;
+            container.explicitHeaderCanvasHeight = getHeight(container.explicitHeaderCanvasHeight, maxHeaderCanvasHeight);
           }
         }
 
@@ -2436,9 +2444,9 @@ angular.module('ui.grid')
    * @name clearAllFilters
    * @methodOf ui.grid.class:Grid
    * @description Clears all filters and optionally refreshes the visible rows.
-   * @params {object} refreshRows Defaults to true.
-   * @params {object} clearConditions Defaults to false.
-   * @params {object} clearFlags Defaults to false.
+   * @param {object} refreshRows Defaults to true.
+   * @param {object} clearConditions Defaults to false.
+   * @param {object} clearFlags Defaults to false.
    * @returns {promise} If `refreshRows` is true, returns a promise of the rows refreshing.
    */
   Grid.prototype.clearAllFilters = function clearAllFilters(refreshRows, clearConditions, clearFlags) {

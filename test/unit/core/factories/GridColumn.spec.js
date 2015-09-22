@@ -114,18 +114,18 @@ describe('GridColumn factory', function () {
 
         buildCols();
 
-        expect(grid.columns[0].displayName).toEqual('Age');
-        expect(grid.columns[1].displayName).toEqual('Name');
-        expect(grid.columns[2].displayName).toEqual('Name2');
-        expect(grid.columns[3].displayName).toEqual('Name3');
+        expect(grid.columns[0].name).toEqual('age');
+        expect(grid.columns[1].name).toEqual('name');
+        expect(grid.columns[2].name).toEqual('name2');
+        expect(grid.columns[3].name).toEqual('name3');
       });
 
-      it('should account for existing incremented names', function () {
+      it('should not change the displayNames if they are provided', function () {
         var cols = [
           { field: 'age' },
-          { field: 'name' },
-          { field: 'name', name: 'Name3' },
-          { field: 'name' }
+          { field: 'name', displayName:'First Name' },
+          { field: 'name', displayName:'First Name' },
+          { field: 'name', displayName:'First Name' }
         ];
 
         grid.options.columnDefs = cols;
@@ -133,9 +133,28 @@ describe('GridColumn factory', function () {
         buildCols();
 
         expect(grid.columns[0].displayName).toEqual('Age');
-        expect(grid.columns[1].displayName).toEqual('Name');
-        expect(grid.columns[2].displayName).toEqual('Name3');
-        expect(grid.columns[3].displayName).toEqual('Name4');
+        expect(grid.columns[1].displayName).toEqual('First Name');
+        expect(grid.columns[2].displayName).toEqual('First Name');
+        expect(grid.columns[3].displayName).toEqual('First Name');
+
+      });
+
+      it('should account for existing incremented names', function () {
+        var cols = [
+          { field: 'age' },
+          { field: 'name' },
+          { field: 'name', name: 'name3' },
+          { field: 'name' }
+        ];
+
+        grid.options.columnDefs = cols;
+
+        buildCols();
+
+        expect(grid.columns[0].name).toEqual('age');
+        expect(grid.columns[1].name).toEqual('name');
+        expect(grid.columns[2].name).toEqual('name3');
+        expect(grid.columns[3].name).toEqual('name2');
       });
     });
   });
@@ -509,5 +528,112 @@ describe('GridColumn factory', function () {
         expect(resolved).toBe(true);
       });
     });
+  });
+
+  describe('updateColumnDef(colDef, isNew)', function () {
+    var col, colDef;
+
+    beforeEach(function () {
+      col = grid.columns[0];
+      colDef = angular.copy(col.colDef);
+      col.width = 141;
+    });
+
+    it ('should set the value of width to * when colDef.width is undefined', invalidColDef(undefined));
+    it ('should set the value of width to * when colDef.width is null', invalidColDef(null));
+    it ('should set the value of width to * when colDef.width is an object', invalidColDef({}));
+    it ('should set the value of width to colDef.width when it is a percentage', widthEqualsColDefWidth('10.1%'));
+
+    it ('should set the value of width to the persed integer colDef.width when it is a string', function () {
+      colDef.width = '42';
+      col.updateColumnDef(colDef);
+      expect(col.width).toBe(42);
+    });
+
+    it ('should set the value of width to colDef.width when it is a series of *', widthEqualsColDefWidth('***'));
+    it ('should set the value of width to colDef.width when it is a number', widthEqualsColDefWidth(42));
+
+    it ('should throw when colDef.width is an invalid string', function () {
+      colDef.width = 'e1%';
+      expect(updateCol(colDef.width)).toThrow();
+      colDef.width = '#FFF';
+      expect(updateCol(colDef.width)).toThrow();
+    });
+
+    it ('should set the value of minWidth to 30 when colDef.minWidth is undefined', invalidMinOrMaxWidthDef(undefined, 'minWidth'));
+    it ('should set the value of minWidth to 30 when colDef.minWidth is null', invalidMinOrMaxWidthDef(null, 'minWidth'));
+    it ('should set the value of minWidth to 30 when colDef.minWidth is an object', invalidMinOrMaxWidthDef({}, 'minWidth'));
+
+    it ('should set the value of minWidth to the parsed integer colDef.minWidth when it is a string', function () {
+      colDef.minWidth = '90';
+      col.updateColumnDef(colDef);
+      expect(col.minWidth).toBe(90);
+    });
+
+    it ('should set the value of minWidth to colDef.minWidth when it is a number', function () {
+      colDef.minWidth = 90;
+      col.updateColumnDef(colDef);
+      expect(col.minWidth).toBe(90);
+    });
+
+    it ('should throw when colDef.minWidth is an invalid string', function () {
+      colDef.minWidth = 'e1%';
+      expect(updateCol(col, colDef)).toThrow();
+      colDef.minWidth = '#FFF';
+      expect(updateCol(col, colDef)).toThrow();
+    });
+
+    it ('should set the value of maxWidth to 9000 when colDef.maxWidth is undefined', invalidMinOrMaxWidthDef(undefined, 'maxWidth'));
+    it ('should set the value of maxWidth to 9000 when colDef.maxWidth is null', invalidMinOrMaxWidthDef(null, 'maxWidth'));
+    it ('should set the value of maxWidth to 9000 when colDef.maxWidth is an object', invalidMinOrMaxWidthDef({}, 'maxWidth'));
+
+    it ('should set the value of maxWidth to the parsed integer colDef.maxWidth when it is a string', function () {
+      colDef.maxWidth = '200';
+      col.updateColumnDef(colDef);
+      expect(col.maxWidth).toBe(200);
+    });
+
+    it ('should set the value of maxWidth to colDef.maxWidth when it is a number', function () {
+      colDef.maxWidth = 200;
+      col.updateColumnDef(colDef);
+      expect(col.maxWidth).toBe(200);
+    });
+
+    it ('should throw when colDef.maxWidth is an invalid string', function () {
+      colDef.maxWidth = 'e1%';
+      expect(updateCol(col, colDef)).toThrow();
+      colDef.maxWidth = '#FFF';
+      expect(updateCol(col, colDef)).toThrow();
+    });
+
+    function widthEqualsColDefWidth(expected) {
+      return function () {
+        colDef.width = expected;
+        col.updateColumnDef(colDef);
+        expect(col.width).toBe(expected);
+      };
+    }
+
+    function invalidColDef(width) {
+      return function () {
+        colDef.width = width;
+        col.updateColumnDef(colDef);
+        expect(col.width).toBe('*');
+      };
+    }
+
+    function updateCol(col, colDef) {
+      return function () {
+        col.updateColumnDef(colDef);
+      };
+    }
+
+    function invalidMinOrMaxWidthDef(width, minOrMax) {
+      return function () {
+        colDef[minOrMax] = width;
+        col.updateColumnDef(colDef);
+        expect(col[minOrMax]).toBe(minOrMax === 'minWidth' ? 30 : 9000);
+      };
+    }
   });
 });
