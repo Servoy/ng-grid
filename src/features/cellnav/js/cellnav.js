@@ -459,8 +459,7 @@
             return uiGridCellNavConstants.direction.RIGHT;
           }
 
-          if (evt.keyCode === uiGridConstants.keymap.UP ||
-            (evt.keyCode === uiGridConstants.keymap.ENTER && evt.shiftKey) ) {
+          if (evt.keyCode === uiGridConstants.keymap.UP) {
             return uiGridCellNavConstants.direction.UP;
           }
 
@@ -468,8 +467,8 @@
             return uiGridCellNavConstants.direction.PG_UP;
           }
 
-          if (evt.keyCode === uiGridConstants.keymap.DOWN ||
-            evt.keyCode === uiGridConstants.keymap.ENTER && !(evt.ctrlKey || evt.altKey)) {
+          if (evt.keyCode === uiGridConstants.keymap.DOWN && 
+        		  !(evt.ctrlKey || evt.altKey)) {
             return uiGridCellNavConstants.direction.DOWN;
           }
 
