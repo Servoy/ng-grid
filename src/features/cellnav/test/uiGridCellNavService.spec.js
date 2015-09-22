@@ -119,14 +119,14 @@ describe('ui.grid.edit uiGridCellNavService', function () {
       expect(direction).toBe(uiGridCellNavConstants.direction.LEFT);
     });
 
-    it('should navigate down on enter', function () {
-      var evt = jQuery.Event("keydown");
-      evt.keyCode = uiGridConstants.keymap.ENTER;
-      var colDef = grid.options.columnDefs[0];
-      var col = grid.columns[0];
-      var direction = uiGridCellNavService.getDirection(evt);
-      expect(direction).toBe(uiGridCellNavConstants.direction.DOWN);
-    });
+//    it('should navigate down on enter', function () {
+//      var evt = jQuery.Event("keydown");
+//      evt.keyCode = uiGridConstants.keymap.ENTER;
+//      var colDef = grid.options.columnDefs[0];
+//      var col = grid.columns[0];
+//      var direction = uiGridCellNavService.getDirection(evt);
+//      expect(direction).toBe(uiGridCellNavConstants.direction.DOWN);
+//    });
 
     it('should navigate down on down arrow', function () {
       var evt = jQuery.Event("keydown");
@@ -137,15 +137,15 @@ describe('ui.grid.edit uiGridCellNavService', function () {
       expect(direction).toBe(uiGridCellNavConstants.direction.DOWN);
     });
 
-    it('should navigate up on shift enter', function () {
-      var evt = jQuery.Event("keydown");
-      evt.keyCode = uiGridConstants.keymap.ENTER;
-      evt.shiftKey = true;
-      var colDef = grid.options.columnDefs[0];
-      var col = grid.columns[0];
-      var direction = uiGridCellNavService.getDirection(evt);
-      expect(direction).toBe(uiGridCellNavConstants.direction.UP);
-    });
+//    it('should navigate up on shift enter', function () {
+//      var evt = jQuery.Event("keydown");
+//      evt.keyCode = uiGridConstants.keymap.ENTER;
+//      evt.shiftKey = true;
+//      var colDef = grid.options.columnDefs[0];
+//      var col = grid.columns[0];
+//      var direction = uiGridCellNavService.getDirection(evt);
+//      expect(direction).toBe(uiGridCellNavConstants.direction.UP);
+//    });
 
     it('should navigate up on up arrow', function () {
       var evt = jQuery.Event("keydown");
