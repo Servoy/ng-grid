@@ -663,7 +663,7 @@
               };
 
               uiGridCtrl.cellNav.clearFocus = grid.cellNav.clearFocus = function () {
-                grid.cellNav.focusedCells = [];
+                //grid.cellNav.focusedCells = [];
                 _scope.$broadcast(uiGridCellNavConstants.CELL_NAV_EVENT);
               };
 
