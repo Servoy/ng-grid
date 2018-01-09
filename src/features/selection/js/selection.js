@@ -474,7 +474,8 @@
             }
           }
 
-          if (selected && noUnselect){
+          if (selected && noUnselect && service.getSelectedRows(grid).length == 1){
+            // if multiselect always allow deselect
             // don't deselect the row
           } else {
             row.setSelected(!selected);
