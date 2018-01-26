@@ -44,7 +44,7 @@ __ColumnDef Options__:
 - `enableCellEdit` (default: `false` for columns of type `'object'`, `true` for all other columns) - `true` will enable
   editing and `false` will disable it.
 - `cellEditableCondition`  (default: `true`)  Can be set to a boolean or a function that will be called with the cellScope
-  to determine if the cell should be invoked in edit mode.
+  and triggerEvent to determine if the cell should be invoked in edit mode.
 - `type` (default: `'string'`) If set to `'number'`, `'boolean'` or `'date'` the default editor provided for editing will be numeric
   or boolean or date editor respectively.  If set to `'object'` the column will not be editable by default.  Be aware that this
   `type` column is also used for other purposes within ui-grid, including the sorting logic.
@@ -55,6 +55,7 @@ __ColumnDef Options__:
 - `editDropdownValueLabel` (default: `'value'`) Controls the value label in the options array - if your array happens to
   contain `'name'` instead you can use it without having to reprocess the array
 - `editDropdownRowEntityOptionsArrayPath` can be used as an alternative to editDropdownOptionsArray when the contents of the dropdown depend on the entity backing the row.
+- `editDropdownOptionsFunction` can be used as yet another alternative to editDropdownOptionsArray when the contents can be retrieved with a function whose parameters are row entity and column definition.
 - `editDropdownFilter` (default: `''`) Allows you to apply a filter to the values in the edit dropdown options, for example
   if you were using angular-translate you would set this to `'translate'`
 
@@ -93,10 +94,12 @@ $scope.gridOptions.columnDefs = [
       };
     });
 
-    app.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
-      $scope.gridOptions = {  };
+    app.controller('MainCtrl', function ($scope, $http, $timeout) {
+      var vm = this;
 
-      $scope.storeFile = function( gridRow, gridCol, files ) {
+      vm.gridOptions = {  };
+
+      vm.storeFile = function( gridRow, gridCol, files ) {
         // ignore all but the first file, it can only select one anyway
         // set the filename into this column
         gridRow.entity.filename = files[0].name;
@@ -105,7 +108,7 @@ $scope.gridOptions.columnDefs = [
         var setFile = function(fileContent){
           gridRow.entity.file = fileContent.currentTarget.result;
           // put it on scope so we can display it - you'd probably do something else with it
-          $scope.lastFile = fileContent.currentTarget.result;
+          vm.lastFile = fileContent.currentTarget.result;
           $scope.$apply();
         };
         var reader = new FileReader();
@@ -113,7 +116,7 @@ $scope.gridOptions.columnDefs = [
         reader.readAsText( files[0] );
       };
 
-      $scope.gridOptions.columnDefs = [
+      vm.gridOptions.columnDefs = [
         { name: 'id', enableCellEdit: false, width: '10%' },
         { name: 'name', displayName: 'Name (editable)', width: '20%' },
         { name: 'age', displayName: 'Age' , type: 'number', width: '10%' },
@@ -125,31 +128,49 @@ $scope.gridOptions.columnDefs = [
         { name: 'registered', displayName: 'Registered' , type: 'date', cellFilter: 'date:"yyyy-MM-dd"', width: '20%' },
         { name: 'address', displayName: 'Address', type: 'object', cellFilter: 'address', width: '30%' },
         { name: 'address.city', displayName: 'Address (even rows editable)', width: '20%',
-             cellEditableCondition: function($scope){
-             return $scope.rowRenderIndex%2
-             }
+          cellEditableCondition: function(scope){
+            return scope.rowRenderIndex%2;
+          }
         },
         { name: 'isActive', displayName: 'Active', type: 'boolean', width: '10%' },
         { name: 'pet', displayName: 'Pet', width: '20%', editableCellTemplate: 'ui-grid/dropdownEditor',
           editDropdownRowEntityOptionsArrayPath: 'foo.bar[0].options', editDropdownIdLabel: 'value'
         },
+        { name: 'status', displayName: 'Status', width: '20%', editableCellTemplate: 'ui-grid/dropdownEditor',
+          cellFilter: 'mapStatus',
+          editDropdownOptionsFunction: function(rowEntity, colDef) {
+            var single;
+            var married = {id: 3, value: 'Married'};
+            if (rowEntity.gender === 1) {
+              single = {id: 1, value: 'Bachelor'};
+              return [single, married];
+            } else {
+              single = {id: 2, value: 'Nubile'};
+              return $timeout(function() {
+                return [single, married];
+              }, 100);
+            }
+          }
+        },
         { name: 'filename', displayName: 'File', width: '20%', editableCellTemplate: 'ui-grid/fileChooserEditor',
-          editFileChooserCallback: $scope.storeFile }
-      ];
+          editFileChooserCallback: vm.storeFile }
+     	];
 
-     $scope.msg = {};
+     	vm.msg = {};
 
-     $scope.gridOptions.onRegisterApi = function(gridApi){
-              //set gridApi on scope
-              $scope.gridApi = gridApi;
-              gridApi.edit.on.afterCellEdit($scope,function(rowEntity, colDef, newValue, oldValue){
-                $scope.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
-                $scope.$apply();
-              });
-            };
+     	vm.gridOptions.onRegisterApi = function(gridApi) {
+      		//set gridApi on scope
+      		vm.gridApi = gridApi;
+      		gridApi.edit.on.afterCellEdit($scope, function(rowEntity, colDef, newValue, oldValue) {
+      				vm.msg.lastCellEdited = 'edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue ;
+      				$scope.$apply();
+        });
+      };
 
       $http.get('/data/500_complex.json')
-        .success(function(data) {
+        .then(function(response) {
+          var data = response.data;
+
           for(i = 0; i < data.length; i++){
             data[i].registered = new Date(data[i].registered);
             data[i].gender = data[i].gender==='male' ? 1 : 2;
@@ -162,9 +183,9 @@ $scope.gridOptions.columnDefs = [
               data[i].foo = {bar: [{baz: 2, options: [{value: 'dog'}, {value: 'cat'}]}]}
             }
           }
-          $scope.gridOptions.data = data;
+          vm.gridOptions.data = data;
         });
-    }])
+    })
 
     .filter('mapGender', function() {
       var genderHash = {
@@ -180,18 +201,34 @@ $scope.gridOptions.columnDefs = [
         }
       };
     })
+    
+    .filter('mapStatus', function() {
+      var genderHash = {
+        1: 'Bachelor',
+        2: 'Nubile',
+        3: 'Married'
+      };
+
+      return function(input) {
+        if (!input){
+          return '';
+        } else {
+          return genderHash[input];
+        }
+      };
+    })
   });
   </file>
   <file name="index.html">
-    <div ng-controller="MainCtrl">
-      <strong>Data Length:</strong> {{ gridOptions.data.length | number }}
+    <div ng-controller="MainCtrl as $ctrl">
+      <strong>Data Length:</strong> {{ $ctrl.gridOptions.data.length | number }}
       <br>
-      <strong>Last Cell Edited:</strong> {{msg.lastCellEdited}}
+      <strong>Last Cell Edited:</strong> {{$ctrl.msg.lastCellEdited}}
       <br>
-      <div ui-grid="gridOptions" ui-grid-edit class="grid"></div>
+      <div ui-grid="$ctrl.gridOptions" ui-grid-edit class="grid"></div>
       <br>
       <div><strong>Last file uploaded:</strong></div>
-      <div>{{lastFile}}</div>
+      <div>{{$ctrl.lastFile}}</div>
     </div>
   </file>
   <file name="main.css">

@@ -237,7 +237,7 @@
          *  all transient information on the tree (children, childCount) and recalculate it
          *
          */
-        grid.treeBase.tree = {};
+        grid.treeBase.tree = [];
 
         service.defaultGridOptions(grid.options);
 
@@ -330,9 +330,10 @@
                * @methodOf  ui.grid.treeBase.api:PublicApi
                * @description expand the immediate children of the specified row
                * @param {gridRow} row the row you wish to expand
+               * @param {boolean} recursive true if you wish to expand the row's ancients
                */
-              expandRow: function (row) {
-                service.expandRow(grid, row);
+              expandRow: function (row, recursive) {
+                service.expandRow(grid, row, recursive);
               },
 
               /**
@@ -461,7 +462,7 @@
          *  @ngdoc object
          *  @name showTreeRowHeader
          *  @propertyOf  ui.grid.treeBase.api:GridOptions
-         *  @description If set to false, don't create the row header.  Youll need to programatically control the expand
+         *  @description If set to false, don't create the row header.  You'll need to programmatically control the expand
          *  states
          *  <br/>Defaults to true
          */
@@ -503,11 +504,11 @@
          *        label: (optional) string,
          *        aggregationFn: function( aggregation, fieldValue, numValue, row ){...},
          *        finalizerFn: (optional) function( aggregation ){...}
-       *        },
+         *      },
          *      mean: {
          *        label: 'mean',
          *        aggregationFn: function( aggregation, fieldValue, numValue ){
-       *            aggregation.count = (aggregation.count || 1) + 1;
+         *          aggregation.count = (aggregation.count || 1) + 1;
          *          aggregation.sum = (aggregation.sum || 0) + numValue;
          *        },
          *        finalizerFn: function( aggregation ){
@@ -525,6 +526,16 @@
          *  <br/>Defaults to {}
          */
         gridOptions.treeCustomAggregations = gridOptions.treeCustomAggregations || {};
+
+        /**
+         *  @ngdoc object
+         *  @name enableExpandAll
+         *  @propertyOf  ui.grid.treeBase.api:GridOptions
+         *  @description Enable the expand all button at the top of the row header
+         *
+         *  <br/>Defaults to true
+         */
+        gridOptions.enableExpandAll = gridOptions.enableExpandAll !== false;
       },
 
 
@@ -535,7 +546,7 @@
        * @description Sets the tree defaults based on the columnDefs
        *
        * @param {object} colDef columnDef we're basing on
-       * @param {GridCol} col the column we're to update
+       * @param {GridColumn} col the column we're to update
        * @param {object} gridOptions the options we should use
        * @returns {promise} promise for the builder - actually we do it all inline so it's immediately resolved
        */
@@ -705,7 +716,7 @@
         };
 
         rowHeaderColumnDef.visible = grid.options.treeRowHeaderAlwaysVisible;
-        grid.addRowHeaderColumn( rowHeaderColumnDef );
+        grid.addRowHeaderColumn(rowHeaderColumnDef, -100);
       },
 
 
@@ -794,7 +805,7 @@
         if (row.treeNode.state === uiGridTreeBaseConstants.EXPANDED){
           service.collapseRow(grid, row);
         } else {
-          service.expandRow(grid, row);
+          service.expandRow(grid, row, false);
         }
 
         grid.queueGridRefresh();
@@ -809,17 +820,38 @@
        *
        * @param {Grid} grid grid object
        * @param {GridRow} row the row we want to expand
+       * @param {boolean} recursive true if you wish to expand the row's ancients
        */
-      expandRow: function ( grid, row ){
-        if ( typeof(row.treeLevel) === 'undefined' || row.treeLevel === null || row.treeLevel < 0 ){
-          return;
-        }
+      expandRow: function ( grid, row, recursive ){
+        if ( recursive ){
+          var parents = [];
+          while ( row && typeof(row.treeLevel) !== 'undefined' && row.treeLevel !== null && row.treeLevel >= 0 && row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
+            parents.push(row);
+            row = row.treeNode.parentRow;
+          }
 
-        if ( row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
-          row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
-          grid.api.treeBase.raise.rowExpanded(row);
-          grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
-          grid.queueGridRefresh();
+          if ( parents.length > 0 ){
+            row = parents.pop();
+            while ( row ){
+                row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
+                grid.api.treeBase.raise.rowExpanded(row);
+                row = parents.pop();
+            }
+
+            grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
+            grid.queueGridRefresh();
+          }
+        } else {
+          if ( typeof(row.treeLevel) === 'undefined' || row.treeLevel === null || row.treeLevel < 0 ){
+            return;
+          }
+
+          if ( row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
+            row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
+            grid.api.treeBase.raise.rowExpanded(row);
+            grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
+            grid.queueGridRefresh();
+          }
         }
       },
 
@@ -1003,7 +1035,7 @@
         if ( grid.options.treeRowHeaderAlwaysVisible === false && grid.treeBase.numberLevels <= 0 ){
           newVisibility = false;
         }
-        if ( rowHeader.visible !== newVisibility ) {
+        if ( rowHeader  && rowHeader.visible !== newVisibility ) {
           rowHeader.visible = newVisibility;
           rowHeader.colDef.visible = newVisibility;
           grid.queueGridRefresh();
@@ -1485,7 +1517,7 @@
        * @param {gridRow} row the parent we're finalising
        */
       finaliseAggregations: function( row ){
-        if ( typeof(row.treeNode.aggregations) === 'undefined' ){
+        if ( row == null || typeof(row.treeNode.aggregations) === 'undefined' ){
           return;
         }
 
@@ -1513,7 +1545,7 @@
        * column footer aggregations.
        *
        * @param {rows} visible rows. not used, but accepted to match signature of GridColumn.aggregationType
-       * @param {gridColumn} the column we are finalizing
+       * @param {GridColumn} column the column we are finalizing
        */
       treeFooterAggregationType: function( rows, column ) {
         service.finaliseAggregation(undefined, column.treeFooterAggregation);

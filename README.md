@@ -1,7 +1,13 @@
 # UI-Grid : An AngularJS data grid
 
-[![Build Status](https://api.travis-ci.org/angular-ui/ui-grid.png?branch=3.0)](https://travis-ci.org/angular-ui/ui-grid) [![Coverage Status](https://coveralls.io/repos/angular-ui/ui-grid/badge.png?branch=master)](https://coveralls.io/r/angular-ui/ui-grid?branch=master)
+[![Build Status](https://travis-ci.org/angular-ui/ui-grid.svg?branch=master)](https://travis-ci.org/angular-ui/ui-grid)
+[![Coverage Status](https://coveralls.io/repos/github/angular-ui/ui-grid/badge.svg?branch=master)](https://coveralls.io/github/angular-ui/ui-grid?branch=master)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-grid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![npm](https://img.shields.io/npm/dm/angular-ui-grid.svg)](https://www.npmjs.com/package/angular-ui-grid)
+[![npm](https://img.shields.io/npm/dt/angular-ui-grid.svg)](https://www.npmjs.com/package/angular-ui-grid)
+[![OpenCollective](https://opencollective.com/ui-grid/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/ui-grid/sponsors/badge.svg)](#sponsors)
 
 [![Selenium Test Status](https://saucelabs.com/browser-matrix/nggrid.svg)](https://saucelabs.com/u/nggrid)
 
@@ -23,7 +29,7 @@ Need Some Inspiration? Have a look at our open [PRs Plz!](https://github.com/ang
 
 ```html
     <link rel="stylesheet" type="text/css" href="bower_components/angular-ui-grid/ui-grid.min.css">
-    <script src="bower_components/angular-ui-grid/ui-grid.min.js">
+<script src="bower_components/angular-ui-grid/ui-grid.min.js"></script>
 ```
 
 ## NPM
@@ -33,8 +39,8 @@ Need Some Inspiration? Have a look at our open [PRs Plz!](https://github.com/ang
 ```
 
 ```html
-    <link rel="stylesheet" type="text/css" href="node_modules/angular-ui-grid/ui.grid.min.css">
-    <script src="node_modules/angular-ui-grid/ui.grid.min.js">
+    <link rel="stylesheet" type="text/css" href="node_modules/angular-ui-grid/ui-grid.min.css">
+    <script src="node_modules/angular-ui-grid/ui-grid.min.js">
 ```
 
 ## CDN
@@ -46,7 +52,7 @@ You can use [rawgit.com](https://rawgit.com/)'s cdn url to access the files in t
 
 # Angular Compatibility
 
-UI-Grid is currently compatible with Angular versions ranging from 1.2.x to 1.4.x.
+UI-Grid is currently compatible with Angular versions ranging from 1.4.x to 1.6.x.
 
 # Feature Stability
 
@@ -74,22 +80,27 @@ Feature           | Release state
 
 For more details on the features check the [Tutorials](http://ui-grid.info/docs/#/tutorial).
 
+# Plugins
+
+UI-Grid has an excellent plugin system. Most new features can be added as plugins. Please see some discussion of that in the [Developer guidelines](DEVELOPER.md).
+There is a [list of known plugins](http://ui-grid.info/docs/#/tutorial/299_third_party_features) on the tutorial site. If you would
+like your plugin added to that list, please [edit the tutorial page](misc/tutorial/299_third_party_features.ngdoc) and send a pull request.
+
 # Building
 
-Install dependencies
+The first step is to install dependencies. `git` is required and must be available from the command line. If you don't have it, install git and ensure that the executable is in your path. If you are new to git, the easiest way to install is by installing the github client. 
 
-    git must be on your path.  If you can't do 'git' from your terminal, then install git first and make sure you have access from the path.
-    Bower installs are dependent on git.
-
-    If you are a git noob, the easiest way to install is by installing the github client.
+The `grunt` command line utility is also required.
 
     # If you don't already have the grunt-cli installed:
     > npm install -g grunt-cli
 
+With `git` and `grunt-cli` installed you simply run the following commands to install all dependencies. 
+
     > npm install
     > grunt install
 
-Default grunt task will test and build files into dist/
+The default grunt task will test and build files into `dist/`
 
     > grunt
 
@@ -98,7 +109,7 @@ Default grunt task will test and build files into dist/
 Development "watch" task. This will automatically rebuild from source on changes, reload Gruntfile.js if you change it, and rebuild the docs.
 
 1. A server on localhost:9002 serving whichever directory you checked out, with livereload. Navigate to http://localhost:9002/misc/demo to see the [demo files](http://localhost:9002/misc/demo/grid-directive.html).
-2. A server on localhost:9003 serving the ./docs directory. These are the docs built from source with a custom grunt-ngdocs that should work with Angular 1.2.x.
+2. A server on localhost:9003 serving the ./docs directory. These are the docs built from source with a custom grunt-ngdocs that should work with Angular 1.6.x.
 
 
 
@@ -106,9 +117,9 @@ Development "watch" task. This will automatically rebuild from source on changes
 
 By default `grunt dev` will start several karma background watchers that will run the tests against multiple versions of angular. You may specify the version(s) you want to use with the `--angular` flag:
 
-    > grunt dev --angular=1.2.21
+    > grunt dev --angular=1.6.7
 
-    > grunt dev --angular=1.2.20,1.2.21
+    > grunt dev --angular=1.5.11,1.6.7
 
 You can also use the `--browsers` specify what browsers to test with (PhantomJS is the default).
 
@@ -137,14 +148,14 @@ The `karmangular` task runs tests serially against multiple browsers (it is used
     > grunt karmangular --browsers=Chrome
 
     # Run tests with a couple versions of Angular against the default PhantomJS browser
-    > grunt karmangular --angular=1.2.20,1.2.21
+    > grunt karmangular --angular=1.5.11,1.6.7
 
 ## SauceLabs
 
 ui-grid is set up to run against SauceLabs. You must have the `SAUCE_ACCESS_KEY` environment variable set.
 
     # Execute tests for a couple versions of angular on IE8
-    > grunt karmangular --angular=1.2.20,1.2.21 --browsers=SL_IE_8
+    > grunt karmangular --angular=1.5.11,1.6.7 --browsers=SL_IE_8
 
     # Run the watch tasks against IE10
     > grunt dev --browsers=SL_IE10
@@ -163,8 +174,83 @@ With the 3.0 release, the repository has been renamed from "ng-grid" to "ui-grid
 
 All network traffic to GitHub should redirect automatically but they say you should update your git remote url:
 
-  git remote set-url origin https://github.com/angular-ui/ui-grid.git
+    git remote set-url origin https://github.com/angular-ui/ui-grid.git
 
 # Thanks
 
 Thanks to [Sauce Labs](http://saucelabs.com) and [BrowserStack](http://www.browserstack.com) for providing their testing platforms to open source projects for free.
+
+
+
+# Backers
+
+Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/ui-grid#backer)]
+
+<a href="https://opencollective.com/ui-grid/backer/0/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/0/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/1/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/1/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/2/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/2/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/3/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/3/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/4/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/4/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/5/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/5/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/6/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/6/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/7/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/7/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/8/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/8/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/9/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/9/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/10/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/10/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/11/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/11/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/12/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/12/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/13/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/13/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/14/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/14/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/15/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/15/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/16/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/16/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/17/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/17/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/18/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/18/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/19/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/19/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/20/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/20/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/21/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/21/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/22/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/22/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/23/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/23/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/24/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/24/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/25/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/25/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/26/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/26/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/27/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/27/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/28/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/28/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/backer/29/website" target="_blank"><img src="https://opencollective.com/ui-grid/backer/29/avatar.svg"></a>
+
+
+# Sponsors
+
+Become a sponsor and get your logo on our website and on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/ui-grid#sponsor)]
+
+<a href="https://opencollective.com/ui-grid/sponsor/0/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/1/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/2/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/3/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/4/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/5/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/6/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/7/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/8/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/9/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/9/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/10/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/10/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/11/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/11/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/12/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/12/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/13/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/13/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/14/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/14/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/15/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/15/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/16/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/16/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/17/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/17/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/18/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/18/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/19/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/19/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/20/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/20/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/21/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/21/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/22/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/22/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/23/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/23/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/24/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/24/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/25/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/25/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/26/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/26/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/27/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/27/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/28/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/28/avatar.svg"></a>
+<a href="https://opencollective.com/ui-grid/sponsor/29/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/29/avatar.svg"></a>
+
+

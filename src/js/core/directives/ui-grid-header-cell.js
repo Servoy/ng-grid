@@ -19,8 +19,18 @@
       compile: function() {
         return {
           pre: function ($scope, $elm, $attrs) {
-            var cellHeader = $compile($scope.col.headerCellTemplate)($scope);
-            $elm.append(cellHeader);
+            var template = $scope.col.headerCellTemplate;
+            if (template === undefined && $scope.col.providedHeaderCellTemplate !== '') {
+              if ($scope.col.headerCellTemplatePromise) {
+                $scope.col.headerCellTemplatePromise.then(function () {
+                  template = $scope.col.headerCellTemplate;
+                  $elm.append($compile(template)($scope));
+                });
+              }
+            }
+            else {
+              $elm.append($compile(template)($scope));
+            }
           },
 
           post: function ($scope, $elm, $attrs, controllers) {
@@ -31,15 +41,21 @@
               headerCell: i18nService.getSafeText('headerCell'),
               sort: i18nService.getSafeText('sort')
             };
+            $scope.isSortPriorityVisible = function() {
+              //show sort priority if column is sorted and there is at least one other sorted column
+              return angular.isNumber($scope.col.sort.priority) && $scope.grid.columns.some(function(element, index){
+                  return angular.isNumber(element.sort.priority) && element !== $scope.col;
+                });
+            };
             $scope.getSortDirectionAriaLabel = function(){
               var col = $scope.col;
               //Trying to recreate this sort of thing but it was getting messy having it in the template.
               //Sort direction {{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending':'none')}}. {{col.sort.priority ? {{columnPriorityText}} {{col.sort.priority}} : ''}
               var sortDirectionText = col.sort.direction === uiGridConstants.ASC ? $scope.i18n.sort.ascending : ( col.sort.direction === uiGridConstants.DESC ? $scope.i18n.sort.descending : $scope.i18n.sort.none);
               var label = sortDirectionText;
-              //Append the priority if it exists
-              if (col.sort.priority) {
-                label = label + '. ' + $scope.i18n.headerCell.priority + ' ' + col.sort.priority;
+
+              if ($scope.isSortPriorityVisible()) {
+                label = label + '. ' + $scope.i18n.headerCell.priority + ' ' + (col.sort.priority + 1);
               }
               return label;
             };
@@ -113,7 +129,7 @@
                 if ( $scope.colMenu ) {
                   uiGridCtrl.columnMenuScope.showMenu($scope.col, $elm, event);
                 }
-              });
+              }).catch(angular.noop);
 
               uiGridCtrl.fireEvent(uiGridConstants.events.COLUMN_HEADER_CLICK, {event: event, columnName: $scope.col.colDef.name});
 
@@ -144,6 +160,12 @@
                 if ( $scope.sortable ){
                   $scope.handleClick(event);
                 }
+              }
+            };
+
+            $scope.handleKeyDown = function(event) {
+              if (event.keyCode === 32) {
+                event.preventDefault();
               }
             };
 
@@ -223,25 +245,17 @@
               }
               contents.addClass(classAdded);
 
-              var rightMostContainer = $scope.grid.renderContainers['right'] ? $scope.grid.renderContainers['right'] : $scope.grid.renderContainers['body'];
-              $scope.isLastCol = ( $scope.col === rightMostContainer.visibleColumnCache[ rightMostContainer.visibleColumnCache.length - 1 ] );
+              $scope.$applyAsync(function() {
+                var rightMostContainer = $scope.grid.renderContainers['right'] ? $scope.grid.renderContainers['right'] : $scope.grid.renderContainers['body'];
+                $scope.isLastCol = ( $scope.col === rightMostContainer.visibleColumnCache[ rightMostContainer.visibleColumnCache.length - 1 ] );
+              });
 
               // Figure out whether this column is sortable or not
-              if (uiGridCtrl.grid.options.enableSorting && $scope.col.enableSorting) {
-                $scope.sortable = true;
-              }
-              else {
-                $scope.sortable = false;
-              }
+              $scope.sortable = Boolean($scope.col.enableSorting);
 
               // Figure out whether this column is filterable or not
               var oldFilterable = $scope.filterable;
-              if (uiGridCtrl.grid.options.enableFiltering && $scope.col.enableFiltering) {
-                $scope.filterable = true;
-              }
-              else {
-                $scope.filterable = false;
-              }
+              $scope.filterable = Boolean(uiGridCtrl.grid.options.enableFiltering && $scope.col.enableFiltering);
 
               if ( oldFilterable !== $scope.filterable){
                 if ( typeof($scope.col.updateFilters) !== 'undefined' ){
@@ -281,15 +295,22 @@
               }
 
               /**
-              * @ngdoc property
-              * @name enableColumnMenu
-              * @propertyOf ui.grid.class:GridOptions.columnDef
-              * @description if column menus are enabled, controls the column menus for this specific
-              * column (i.e. if gridOptions.enableColumnMenus, then you can control column menus
-              * using this option. If gridOptions.enableColumnMenus === false then you get no column
-              * menus irrespective of the value of this option ).  Defaults to true.
-              *
-              */
+               * @ngdoc property
+               * @name enableColumnMenu
+               * @propertyOf ui.grid.class:GridOptions.columnDef
+               * @description if column menus are enabled, controls the column menus for this specific
+               * column (i.e. if gridOptions.enableColumnMenus, then you can control column menus
+               * using this option. If gridOptions.enableColumnMenus === false then you get no column
+               * menus irrespective of the value of this option ).  Defaults to true.
+               *
+               * By default column menu's trigger is hidden before mouse over, but you can always force it to be visible with CSS:
+               *
+               * <pre>
+               *  .ui-grid-column-menu-button {
+               *    display: block;
+               *  }
+               * </pre>
+               */
               /**
               * @ngdoc property
               * @name enableColumnMenus
@@ -342,11 +363,18 @@
                 .then(function () {
                   if (uiGridCtrl.columnMenuScope) { uiGridCtrl.columnMenuScope.hideMenu(); }
                   uiGridCtrl.grid.refresh();
-                });
+                }).catch(angular.noop);
             };
 
+            $scope.headerCellArrowKeyDown = function(event) {
+              if (event.keyCode === 32 || event.keyCode === 13) {
+                event.preventDefault();
+                $scope.toggleMenu(event);
+              }
+            }; 
 
             $scope.toggleMenu = function(event) {
+
               event.stopPropagation();
 
               // If the menu is already showing...

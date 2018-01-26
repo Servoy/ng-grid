@@ -63,7 +63,9 @@ appears when you quickly scroll through the grid.
       ];
 
       $http.get('/data/500_complex.json')
-        .success(function(data) {
+        .then(function(response) {
+          var data = response.data;
+
           for(i = 0; i < data.length; i++){
             data[i].subGridOptions = {
               columnDefs: [ {name:"Id", field:"id"},{name:"Name", field:"name"} ],
@@ -101,7 +103,9 @@ appears when you quickly scroll through the grid.
           ];
 
           $http.get('/data/500_complex.json')
-            .success(function(data) {
+            .then(function(response) {
+              var data = response.data;
+
               for(i = 0; i < data.length; i++){
                 data[i].subGridOptions = {
                   columnDefs: [ {name:"Id", field:"id"},{name:"Name", field:"name"} ],
@@ -127,8 +131,8 @@ appears when you quickly scroll through the grid.
                       ]};
 
                       $http.get('/data/100.json')
-                        .success(function(data) {
-                          row.entity.subGridOptions.data = data;
+                        .then(function(response) {
+                          row.entity.subGridOptions.data = response.data;
                         });
                     }
                 });
@@ -143,7 +147,35 @@ appears when you quickly scroll through the grid.
           ];
 
           $http.get('/data/500_complex.json')
-            .success(function(data) {
+            .then(function(response) {
+              $scope.gridOptions.data = response.data;
+            });
+        }]);
+    app.controller('FourthCtrl', ['$scope', '$http', '$log', function ($scope, $http, $log) {
+          $scope.gridOptions = {
+            enableRowSelection: true,
+            expandableRowTemplate: 'expandableRowTemplate.html',
+            expandableRowHeight: 150
+          }
+
+          $scope.gridOptions.columnDefs = [
+            { name: 'id', pinnedLeft:true },
+            { name: 'name'},
+            { name: 'age'},
+            { name: 'address.city'}
+          ];
+
+          $http.get('/data/500_complex.json')
+            .then(function(response) {
+              var data = response.data;
+
+              for(i = 0; i < data.length; i++){
+                data[i].subGridOptions = {
+                  columnDefs: [ {name:"Id", field:"id"},{name:"Name", field:"name"} ],
+                  data: data[i].friends,
+                  disableRowExpandable : (i % 2 === 0)
+                }
+              }
               $scope.gridOptions.data = data;
             });
         }]);
@@ -162,6 +194,10 @@ appears when you quickly scroll through the grid.
     </div>
     Retrieve data for subGrid when expanding
     <div ng-controller="ThirdCtrl">
+       <div ui-grid="gridOptions" ui-grid-expandable class="grid"></div>
+    </div>
+    Toggle expand subGrid control
+    <div ng-controller="FourthCtrl">
        <div ui-grid="gridOptions" ui-grid-expandable class="grid"></div>
     </div>
   </file>

@@ -11,10 +11,6 @@
 /**
  * @ngdoc service
  * @name ui.grid.e2eTestLibrary.api:gridTest
- * @description
- * End to end test functions.  Whenever these are updated, it may also be necessary
- * to update the associated tutorial.
- *
  */
 module.exports = {
   /**
@@ -28,7 +24,7 @@ module.exports = {
   firefoxReload: function () {
     beforeEach(function () {
       return browser.getCapabilities().then(function (cap) {
-        if (cap.caps_.browserName === 'firefox') {
+        if (cap && cap.caps_ && cap.caps_.browserName === 'firefox') {
           return browser.refresh()
             .then(function () {
               // Remove the fixed navbar, it overlays elements and intercepts events in Firefox
@@ -36,24 +32,11 @@ module.exports = {
                 angular.element(document.getElementsByClassName('navbar')).remove();
               });
             });
-        }
-        else {
-          return protractor.promise.when(true);
+        } else {
+          return browser.refresh();
         }
       });
     });
-  },
-
-  isFirefox: function () {
-    return browser.getCapabilities()
-      .then(function (cap) {
-        if (cap.caps_.browserName === 'firefox') {
-          return true;
-        }
-        else {
-         return false;
-        }
-      });
   },
 
   /**
@@ -94,7 +77,7 @@ module.exports = {
   * Helper function for returning a row.
   *
   * @param gridId {string}
-  * @param rowNum {integer}
+  * @param rowNum {Integer}
   *
   * @returns {ElementFinder|*}
   *
@@ -123,7 +106,8 @@ module.exports = {
   selectRow: function( gridId, rowNum ) {
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     var row = this.getRow( gridId, rowNum );
-    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+    var btn = row.element( by.css('.ui-grid-selection-row-header-buttons') );
+    return browser.actions().mouseMove(btn).mouseDown(btn).mouseUp().perform();
   },
 
   /**
@@ -149,7 +133,7 @@ module.exports = {
   */
   expectRowCount: function( gridId, expectedNumRows ) {
 
-    var rows = this.getGrid( gridId ).all( by.repeater('(rowRenderIndex, row) in rowContainer.renderedRows track by $index') );
+    var rows = this.getGrid( gridId ).element( by.css('.ui-grid-render-container-body')).all( by.repeater('(rowRenderIndex, row) in rowContainer.renderedRows track by $index') );
     expect(rows.count()).toEqual(expectedNumRows);
   },
 
@@ -192,7 +176,8 @@ module.exports = {
     var headerColumns = this.getGrid(gridId)
       .element(by.css('.ui-grid-render-container-body'))
       .element( by.css('.ui-grid-header'))
-      .all(by.repeater('col in colContainer.renderedColumns track by col.uid'));
+      .all(by.repeater('col in colContainer.renderedColumns track by col.uid'))
+      .all(by.css('.ui-grid-header-cell-label'));
 
     expect(headerColumns.count()).toBe(expectedColumns.length);
 
@@ -327,7 +312,7 @@ module.exports = {
   */
   expectHeaderCellValueMatch: function( gridId, expectedCol, expectedValue ) {
     var headerCell = this.headerCell( gridId, expectedCol);
-    expect(headerCell.getText()).toMatch(expectedValue);
+    expect(headerCell.element(by.css('.ui-grid-header-cell-label')).getText()).toMatch(expectedValue);
   },
 
   /**
@@ -758,13 +743,12 @@ module.exports = {
   * @name expectVisibleGridMenuItems
   * @description Checks how many visible menu items there are in the grid menu
   * @param {string} gridId the id of the grid that you want to inspect
-  * @param {integer} expectItems the number of visible items you expect
+  * @param {Integer} expectItems the number of visible items you expect
   *
   * @example
   * <pre>
   *   gridTestUtils.expectVisibleGridMenuItems('myGrid', 3);
   * </pre>
-  *
   */
   expectVisibleGridMenuItems: function( gridId, expectItems ) {
     var gridMenuButton = this.getGrid( gridId ).element( by.css ( '.ui-grid-menu-button' ) );
@@ -797,7 +781,7 @@ module.exports = {
   * not be visible.  So the item you want to click on may not be the same
   * as the item number when you look at the ui
   * @param {string} gridId the id of the grid that you want to inspect
-  * @param {integer} itemNumber the number of visible items you expect
+  * @param {Integer} itemNumber the number of visible items you expect
   *
   * @example
   * <pre>
@@ -811,10 +795,30 @@ module.exports = {
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     return browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform()
       .then(function () {
-        var row = gridMenuButton.element( by.repeater('item in menuItems').row( itemNumber) );
+        var row;
+
+        browser.sleep(500);
+
+        row = element(by.id('menuitem-' + itemNumber)).element(by.css('.ui-grid-menu-item'));
 
         return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
       });
+  },
+
+  /**
+   * @ngdoc method
+   * @methodOf ui.grid.e2eTestLibrary.api:gridTest
+   * @name getInnerHtml
+   * @description Gets the inner HTML content of a target element
+   * @param {Object} target The element whose inner HTML you want
+   *
+   * @example
+   * <pre>
+   *   gridTestUtils.getInnerHtml(element(by.id('myGrid'));
+   * </pre>
+   */
+  getInnerHtml: function(target) {
+    return browser.executeScript('return arguments[0].innerHTML;', target);
   },
 
   /**

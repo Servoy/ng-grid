@@ -175,7 +175,7 @@ angular.module('ui.grid')
      *   menu
      * @param {$scope} $scope the scope of this gridMenu, from which we can find all
      * the information that we need
-     * @returns {array} an array of menu items that can be shown
+     * @returns {Array} an array of menu items that can be shown
      */
     getMenuItems: function( $scope ) {
       var menuItems = [
@@ -193,7 +193,7 @@ angular.module('ui.grid')
       var clearFilters = [{
         title: i18nService.getSafeText('gridMenu.clearAllFilters'),
         action: function ($event) {
-          $scope.grid.clearAllFilters(undefined, true, undefined);
+          $scope.grid.clearAllFilters();
         },
         shown: function() {
           return $scope.grid.options.enableFiltering;
@@ -323,7 +323,7 @@ angular.module('ui.grid')
           menuItem.title = successValue;
         }, function( errorValue ) {
           menuItem.title = errorValue;
-        });
+        }).catch(angular.noop);
       } else {
         gridUtil.logError('Expected gridMenuTitleFilter to return a string or a promise, it has returned neither, bad config');
         menuItem.title = 'badconfig';
@@ -337,7 +337,7 @@ angular.module('ui.grid')
      * @description Toggles the visibility of an individual column.  Expects to be
      * provided a context that has on it a gridColumn, which is the column that
      * we'll operate upon.  We change the visibility, and refresh the grid as appropriate
-     * @param {GridCol} gridCol the column that we want to toggle
+     * @param {GridColumn} gridCol the column that we want to toggle
      *
      */
     toggleColumnVisibility: function( gridCol ) {

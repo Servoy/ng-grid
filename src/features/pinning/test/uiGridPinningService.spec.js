@@ -13,7 +13,8 @@ describe('ui.grid.pinning uiGridPinningService', function () {
     uiGridPinningConstants = _uiGridPinningConstants_;
     gridClassFactory = _gridClassFactory_;
     GridRenderContainer = _GridRenderContainer_;
-
+  }));
+  beforeEach(function() {
     grid = gridClassFactory.createGrid({});
     spyOn(grid, 'registerColumnBuilder');
 
@@ -25,12 +26,20 @@ describe('ui.grid.pinning uiGridPinningService', function () {
     grid.options.data = [{col1:'a'},{col1:'b'}];
 
     grid.buildColumns();
-  }));
+  });
 
   describe('initialize', function() {
 
     it('should have pinning enabled', function() {
       expect(grid.options.enablePinning).toBe(true);
+    });
+
+    it('should have hide PinLeft disabled', function () {
+      expect(grid.options.hidePinLeft).toBeFalsy();
+    });
+
+    it('should have hide PinRight disabled', function () {
+      expect(grid.options.hidePinRight).toBeFalsy();
     });
 
     it('should register a column builder to the grid', function() {
@@ -49,6 +58,41 @@ describe('ui.grid.pinning uiGridPinningService', function () {
       uiGridPinningService.defaultGridOptions(options);
       expect(options.enablePinning).toBe(false);
     });
+
+    it('should default to false for hidePinLeft', function () {
+      var options = {};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinLeft).toBeFalsy();
+    });
+    it('should allow true for hidePinLeft when pinning is enabled', function () {
+      var options = { enablePinning: true, hidePinLeft: true};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinLeft).toBe(true);
+    });
+    it('should NOT allow true for hidePinLeft when pinning is Disabled', function () {
+      var options = { enablePinning: false, hidePinLeft: true};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinLeft).toBe(false);
+    });
+
+
+    it('should default to false for hidePinRight', function () {
+      var options = {};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinRight).toBeFalsy();
+    });
+    it('should allow true for hidePinRight when pinning is enabled', function () {
+      var options = { enablePinning: true, hidePinRight: true};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinRight).toBe(true);
+    });
+    it('should NOT allow true for hidePinRight when pinning is Disabled', function () {
+      var options = { enablePinning: false, hidePinRight: true};
+      uiGridPinningService.defaultGridOptions(options);
+      expect(options.hidePinRight).toBe(false);
+    });
+
+
   });
 
   describe('pinningColumnBuilder', function() {
@@ -57,7 +101,7 @@ describe('ui.grid.pinning uiGridPinningService', function () {
     beforeEach(function() {
       mockCol = {menuItems: [], grid: grid};
       colOptions = {};
-      gridOptions = {enablePinning:true};
+      gridOptions = {enablePinning:true, hidePinLeft: false, hidePinRight: false};
     });
 
     it('should enable column pinning when pinning allowed for the grid', function() {
@@ -81,6 +125,30 @@ describe('ui.grid.pinning uiGridPinningService', function () {
       uiGridPinningService.pinningColumnBuilder(colOptions, mockCol, gridOptions);
 
       expect(colOptions.enablePinning).toBe(true);
+    });
+
+    it('should be true in columnOptions when hidePinLeft=true for the grid', function() {
+      gridOptions = {enablePinning: true, hidePinLeft: true};
+
+      uiGridPinningService.pinningColumnBuilder(colOptions, mockCol, gridOptions);
+
+      expect(colOptions.hidePinLeft).toBe(true);
+    });
+    it('should be true when hidePinLeft=true for the column', function() {
+      colOptions = {enablePinning: true, hidePinLeft: true};
+      gridOptions = {enablePinning: true, hidePinLeft: false};
+
+      uiGridPinningService.pinningColumnBuilder(colOptions, mockCol, gridOptions);
+
+      expect(colOptions.hidePinLeft).toBe(true);
+    });
+    it('should be true when hidePinRight=true for the column', function() {
+      colOptions = {enablePinning: true, hidePinRight: true};
+      gridOptions = {enablePinning: true, hidePinRight: false};
+
+      uiGridPinningService.pinningColumnBuilder(colOptions, mockCol, gridOptions);
+
+      expect(colOptions.hidePinRight).toBe(true);
     });
 
     it('should pin left when pinnedLeft=true', function() {
@@ -138,8 +206,8 @@ describe('ui.grid.pinning uiGridPinningService', function () {
     var previousWidth;
 
     beforeEach(function() {
-      spyOn(grid, 'createLeftContainer').andCallThrough();
-      spyOn(grid, 'createRightContainer').andCallThrough();
+      spyOn(grid, 'createLeftContainer').and.callThrough();
+      spyOn(grid, 'createRightContainer').and.callThrough();
       previousWidth = grid.columns[0].drawnWidth;
     });
 

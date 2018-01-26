@@ -169,7 +169,7 @@
                * <pre>
                *      gridApi.grouping.on.aggregationChanged(scope,function(col){})
                * </pre>
-               * @param {gridCol} col the column which on which aggregation changed. The aggregation
+               * @param {GridColumn} col the column which on which aggregation changed. The aggregation
                * type is available as `col.treeAggregation.type`
                */
               aggregationChanged: {},
@@ -182,7 +182,7 @@
                * <pre>
                *      gridApi.grouping.on.groupingChanged(scope,function(col){})
                * </pre>
-               * @param {gridCol} col the column which on which grouping changed. The new grouping is
+               * @param {GridColumn} col the column which on which grouping changed. The new grouping is
                * available as `col.grouping`
                */
               groupingChanged: {}
@@ -353,7 +353,7 @@
          *  @description shows counts on the groupHeader rows. Not that if you are using a cellFilter or a
          *  sortingAlgorithm which relies on a specific format or data type, showing counts may cause that
          *  to break, since the group header rows will always be a string with groupingShowCounts enabled.
-         *  <br/>Defaults to true except on columns of type 'date'
+         *  <br/>Defaults to true except on columns of types 'date' and 'object'
          */
         gridOptions.groupingShowCounts = gridOptions.groupingShowCounts !== false;
 
@@ -384,7 +384,7 @@
        * @description Sets the grouping defaults based on the columnDefs
        *
        * @param {object} colDef columnDef we're basing on
-       * @param {GridCol} col the column we're to update
+       * @param {GridColumn} col the column we're to update
        * @param {object} gridOptions the options we should use
        * @returns {promise} promise for the builder - actually we do it all inline so it's immediately resolved
        */
@@ -582,7 +582,7 @@
 
         if ( typeof(aggregation.groupVal) !== 'undefined') {
           aggregation.rendered = aggregation.groupVal;
-          if ( col.grid.options.groupingShowCounts && col.colDef.type !== 'date' ){
+          if ( col.grid.options.groupingShowCounts && col.colDef.type !== 'date' && col.colDef.type !== 'object' ){
             aggregation.rendered += (' (' + aggregation.value + ')');
           }
         } else {
@@ -619,7 +619,7 @@
         columns.sort(function(a, b){
           var a_group, b_group;
           if (a.isRowHeader){
-            a_group = -1000;
+            a_group = a.headerPriority;
           }
           else if ( typeof(a.grouping) === 'undefined' || typeof(a.grouping.groupPriority) === 'undefined' || a.grouping.groupPriority < 0){
             a_group = null;
@@ -628,7 +628,7 @@
           }
 
           if (b.isRowHeader){
-            b_group = -1000;
+            b_group = b.headerPriority;
           }
           else if ( typeof(b.grouping) === 'undefined' || typeof(b.grouping.groupPriority) === 'undefined' || b.grouping.groupPriority < 0){
             b_group = null;
@@ -663,7 +663,7 @@
        * move is handled in a columnProcessor, so gets called as part of refresh
        *
        * @param {Grid} grid grid object
-       * @param {GridCol} column the column we want to group
+       * @param {GridColumn} column the column we want to group
        */
       groupColumn: function( grid, column){
         if ( typeof(column.grouping) === 'undefined' ){
@@ -673,6 +673,9 @@
         // set the group priority to the next number in the hierarchy
         var existingGrouping = service.getGrouping( grid );
         column.grouping.groupPriority = existingGrouping.grouping.length;
+
+        // save sort in order to restore it when column is ungrouped
+        column.previousSort = angular.copy(column.sort);
 
         // add sort if not present
         if ( !column.sort ){
@@ -705,7 +708,7 @@
        * move is handled in a columnProcessor, so gets called as part of refresh
        *
        * @param {Grid} grid grid object
-       * @param {GridCol} column the column we want to ungroup
+       * @param {GridColumn} column the column we want to ungroup
        */
       ungroupColumn: function( grid, column){
         if ( typeof(column.grouping) === 'undefined' ){
@@ -716,9 +719,15 @@
         delete column.treeAggregation;
         delete column.customTreeAggregationFinalizer;
 
+        if (column.previousSort) {
+          column.sort = column.previousSort;
+          delete column.previousSort;
+        }
+
         service.tidyPriorities( grid );
 
         grid.api.grouping.raise.groupingChanged(column);
+        grid.api.core.raise.sortChanged(grid, grid.getColumnSorting());
 
         grid.queueGridRefresh();
       },
@@ -731,7 +740,7 @@
        * column is currently grouped then it removes the grouping first.
        *
        * @param {Grid} grid grid object
-       * @param {GridCol} column the column we want to aggregate
+       * @param {GridColumn} column the column we want to aggregate
        * @param {string} one of the recognised types from uiGridGroupingConstants or one of the custom aggregations from gridOptions
        */
       aggregateColumn: function( grid, column, aggregationType){
@@ -1050,16 +1059,24 @@
           newDisplayValue = grid.options.groupingNullLabel;
         }
 
+        var getKeyAsValueForCacheMap = function(key) {
+          if (angular.isObject(key)) {
+              return JSON.stringify(key);
+          } else {
+              return key;
+          }
+        };
+
         var cacheItem = grid.grouping.oldGroupingHeaderCache;
         for ( var i = 0; i < stateIndex; i++ ){
-          if ( cacheItem && cacheItem[processingState[i].currentValue] ){
-            cacheItem = cacheItem[processingState[i].currentValue].children;
+          if ( cacheItem && cacheItem[getKeyAsValueForCacheMap(processingState[i].currentValue)] ){
+            cacheItem = cacheItem[getKeyAsValueForCacheMap(processingState[i].currentValue)].children;
           }
         }
 
         var headerRow;
-        if ( cacheItem && cacheItem[newValue]){
-          headerRow = cacheItem[newValue].row;
+        if ( cacheItem && cacheItem[getKeyAsValueForCacheMap(newValue)]){
+          headerRow = cacheItem[getKeyAsValueForCacheMap(newValue)].row;
           headerRow.entity = {};
         } else {
           headerRow = new GridRow( {}, null, grid );
@@ -1086,9 +1103,9 @@
         // add our new header row to the cache
         cacheItem = grid.grouping.groupingHeaderCache;
         for ( i = 0; i < stateIndex; i++ ){
-          cacheItem = cacheItem[processingState[i].currentValue].children;
+          cacheItem = cacheItem[getKeyAsValueForCacheMap(processingState[i].currentValue)].children;
         }
-        cacheItem[newValue] = { row: headerRow, children: {} };
+        cacheItem[getKeyAsValueForCacheMap(newValue)] = { row: headerRow, children: {} };
       },
 
 
