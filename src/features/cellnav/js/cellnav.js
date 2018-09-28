@@ -473,8 +473,7 @@
             return uiGridCellNavConstants.direction.PG_UP;
           }
 
-          if (evt.keyCode === uiGridConstants.keymap.DOWN && 
-                !(evt.ctrlKey || evt.altKey)) {
+          if (evt.keyCode === uiGridConstants.keymap.DOWN && !(evt.ctrlKey || evt.altKey)) {
             return uiGridCellNavConstants.direction.DOWN;
           }
 
@@ -666,7 +665,7 @@
               };
 
               uiGridCtrl.cellNav.clearFocus = grid.cellNav.clearFocus = function () {
-                //grid.cellNav.focusedCells = [];
+                // grid.cellNav.focusedCells = [];
                 _scope.$broadcast(uiGridCellNavConstants.CELL_NAV_EVENT);
               };
 
@@ -1085,7 +1084,7 @@
            * Since the focus event doesn't include key press information we can't use it
            * as our primary source of the event.
            */
-          //$elm.on('mousedown', preventMouseDown);
+          // $elm.on('mousedown', preventMouseDown);
 
           // turn on and off for edit events
           if (uiGridCtrl.grid.api.edit) {
