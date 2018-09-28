@@ -57,6 +57,18 @@ describe('GridRenderContainer factory', function() {
 			expect(r.getViewportStyle()).toEqual({'overflow-x': 'hidden', 'overflow-y': 'scroll'});
 		});
 
+		it('should have a vert scrollbar only when needed', function() {
+			r.name = 'body';
+			grid.options.enableVerticalScrollbar = uiGridConstants.scrollbars.WHEN_NEEDED;
+			expect(r.getViewportStyle()).toEqual({'overflow-x': 'scroll', 'overflow-y': 'auto'});
+		});
+
+		it('should have a horiz scrollbar only when needed', function() {
+			r.name = 'body';
+			grid.options.enableHorizontalScrollbar = uiGridConstants.scrollbars.WHEN_NEEDED;
+			expect(r.getViewportStyle()).toEqual({'overflow-x': 'auto', 'overflow-y': 'scroll'});
+		});
+
 		it('left should have a no scrollbar when not rtl', function() {
 			r.name = 'left';
 			expect(r.getViewportStyle()).toEqual({'overflow-x': 'hidden', 'overflow-y': 'hidden'});
@@ -109,6 +121,55 @@ describe('GridRenderContainer factory', function() {
 			expect(r.getViewportStyle()).toEqual({'overflow-x':'hidden', 'overflow-y':'auto'});
 		});
 	});
+
+  describe('needsHScrollbarPlaceholder', function() {
+    var r;
+
+    function initializeRenderContainer(scrollbarSetting, scrollWidth, offsetWidth) {
+      grid.element = [{
+        querySelector: function() {
+          return {
+            scrollWidth: scrollWidth,
+            offsetWidth: offsetWidth
+          };
+        }
+      }];
+      grid.options.enableHorizontalScrollbar = scrollbarSetting;
+      r = new GridRenderContainer('name', grid);
+    }
+    describe('body render container', function() {
+      it('should return false', function() {
+        initializeRenderContainer();
+        r.name = 'body';
+        expect(r.needsHScrollbarPlaceholder()).toEqual(false);
+      });
+    });
+
+    describe('left && right render containers', function() {
+      describe('grid options enableHorizontalScrollbar === ALWAYS', function() {
+        it('should return true', function() {
+          initializeRenderContainer(uiGridConstants.scrollbars.ALWAYS);
+          r.name = 'left';
+          expect(r.needsHScrollbarPlaceholder()).toEqual(true);
+
+          r.name = 'right';
+          expect(r.needsHScrollbarPlaceholder()).toEqual(true);
+        });
+      });
+      describe('grid options enableHorizontalScrollbar === WHEN_NEEDED', function() {
+        it('should return true if body render container is scrollable', function () {
+          initializeRenderContainer(uiGridConstants.scrollbars.WHEN_NEEDED, 100, 50);
+          r.name = 'left';
+          expect(r.needsHScrollbarPlaceholder()).toBe(true);
+        });
+        it('should return false if body render container is not scrollable', function () {
+          initializeRenderContainer(uiGridConstants.scrollbars.WHEN_NEEDED, 50, 100);
+          r.name = 'left';
+          expect(r.needsHScrollbarPlaceholder()).toBe(false);
+        });
+      });
+    });
+  });
 
 	describe('updateWidths', function() {
 		beforeEach(function() {

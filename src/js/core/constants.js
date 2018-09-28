@@ -196,7 +196,7 @@
      * @ngdoc object
      * @name dataChange
      * @propertyOf ui.grid.service:uiGridConstants
-     * @description Used with {@link ui.grid.core.api:PublicApi#methods_notifyDataChange PublicApi.notifyDataChange},
+     * @description Used with {@link ui.grid.api:PublicApi#methods_notifyDataChange PublicApi.notifyDataChange},
      * {@link ui.grid.class:Grid#methods_callDataChangeCallbacks Grid.callDataChangeCallbacks},
      * and {@link ui.grid.class:Grid#methods_registerDataChangeCallback Grid.registerDataChangeCallback}
      * to specify the type of the event(s).
@@ -227,6 +227,7 @@
      * Available options are:
      * - `uiGridConstants.scrollbars.NEVER` - never show scrollbars in this direction
      * - `uiGridConstants.scrollbars.ALWAYS` - always show scrollbars in this direction
+     * - `uiGridConstants.scrollbars.WHEN_NEEDED` - shows scrollbars in this direction when needed
      */
 
     scrollbars: {

@@ -1,4 +1,4 @@
-(function(){
+(function() {
 
 /**
  * @ngdoc directive
@@ -32,7 +32,7 @@ angular.module('ui.grid')
 
 .directive('uiGridMenu', ['$compile', '$timeout', '$window', '$document', 'gridUtil', 'uiGridConstants', 'i18nService',
 function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18nService) {
-  var uiGridMenu = {
+  return {
     priority: 0,
     scope: {
       // shown: '&',
@@ -54,7 +54,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
       }
 
       var setupHeightStyle = function(gridHeight) {
-        //menu appears under header row, so substract that height from it's total
+        // menu appears under header row, so substract that height from it's total
         // additional 20px for general padding
         var gridMenuMaxHeight = gridHeight - uiGridCtrl.grid.headerHeight - 20;
         $scope.dynamicStyles = [
@@ -77,7 +77,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
 
     // *** Show/Hide functions ******
       $scope.showMenu = function(event, args) {
-        if ( !$scope.shown ){
+        if ( !$scope.shown ) {
 
           /*
            * In order to animate cleanly we remove the ng-if, wait a digest cycle, then
@@ -120,13 +120,11 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
           $elm.on('keyup', checkKeyUp);
           $elm.on('keydown', checkKeyDown);
         });
-        //automatically set the focus to the first button element in the now open menu.
-        gridUtil.focus.bySelector($elm, 'button[type=button]', true);
       };
 
 
       $scope.hideMenu = function(event) {
-        if ( $scope.shown ){
+        if ( $scope.shown ) {
           /*
            * In order to animate cleanly we animate the addition of ng-hide, then use a $timeout to
            * set the ng-if (shown = false) after the animation runs.  In theory we can cascade off the
@@ -137,11 +135,11 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
            */
           $scope.shownMid = false;
           $timeout( function() {
-            if ( !$scope.shownMid ){
+            if ( !$scope.shownMid ) {
               $scope.shown = false;
               $scope.$emit('menu-hidden');
             }
-          }, 200);
+          }, 40);
         }
 
         angular.element(document).off('click touchstart', applyHideMenu);
@@ -159,7 +157,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
 
 
     // *** Auto hide when click elsewhere ******
-      var applyHideMenu = function(){
+      var applyHideMenu = function() {
         if ($scope.shown) {
           $scope.$apply(function () {
             $scope.hideMenu();
@@ -217,12 +215,10 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
       $scope.$on('$destroy', $scope.$on(uiGridConstants.events.ITEM_DRAGGING, applyHideMenu ));
     }
   };
-
-  return uiGridMenu;
 }])
 
 .directive('uiGridMenuItem', ['gridUtil', '$compile', 'i18nService', function (gridUtil, $compile, i18nService) {
-  var uiGridMenuItem = {
+  return {
     priority: 0,
     scope: {
       name: '=',
@@ -275,7 +271,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
             return $scope.shown.call(context);
           };
 
-          $scope.itemAction = function($event,title) {
+          $scope.itemAction = function($event, title) {
             $event.stopPropagation();
 
             if (typeof($scope.action) === 'function') {
@@ -292,19 +288,26 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
 
               $scope.action.call(context, $event, title);
 
-              if ( !$scope.leaveOpen ){
+              if ( !$scope.leaveOpen ) {
                 $scope.$emit('hide-menu');
               } else {
                 // Maintain focus on the selected item
-                gridUtil.focus.bySelector(angular.element($event.target.parentElement), 'button[type=button]', true);
+                var correctParent = $event.target.parentElement;
+
+                // nodeName of 'I' means target is i element, need the next parent
+                if (angular.element($event.target)[0].nodeName === 'I') {
+                  correctParent = correctParent.parentElement;
+                }
+
+                gridUtil.focus.bySelector(correctParent, 'button[type=button]', true);
               }
             }
           };
 
-          $scope.label = function(){
+          $scope.label = function() {
             var toBeDisplayed = $scope.name;
 
-            if (typeof($scope.name) === 'function'){
+            if (typeof($scope.name) === 'function') {
               toBeDisplayed = $scope.name.call();
             }
 
@@ -316,8 +319,6 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
       };
     }
   };
-
-  return uiGridMenuItem;
 }]);
 
 })();

@@ -1,3 +1,334 @@
+<a name="4.6.3"></a>
+## [4.6.3](https://github.com/angular-ui/ui-grid/compare/v4.6.2...v4.6.3) (2018-08-04)
+
+
+### Bug Fixes
+
+* **fonts:** changed space endings on font files ([ed8ebba](https://github.com/angular-ui/ui-grid/commit/ed8ebba)), closes [#6809](https://github.com/angular-ui/ui-grid/issues/6809)
+* **header:** Change grid header css to flexbox ([f9ac3e5](https://github.com/angular-ui/ui-grid/commit/f9ac3e5)), closes [#6799](https://github.com/angular-ui/ui-grid/issues/6799) [#2592](https://github.com/angular-ui/ui-grid/issues/2592)
+* **less:** create a core.less file for import ([6866583](https://github.com/angular-ui/ui-grid/commit/6866583)), closes [#4659](https://github.com/angular-ui/ui-grid/issues/4659)
+* **less:** remove bootstrap dependency ([a480900](https://github.com/angular-ui/ui-grid/commit/a480900)), closes [#4173](https://github.com/angular-ui/ui-grid/issues/4173) [#5435](https://github.com/angular-ui/ui-grid/issues/5435)
+* **tree-base:** agg: remove now works ([4a37231](https://github.com/angular-ui/ui-grid/commit/4a37231)), closes [#5682](https://github.com/angular-ui/ui-grid/issues/5682)
+
+
+
+<a name="4.6.2"></a>
+## [4.6.2](https://github.com/angular-ui/ui-grid/compare/v4.6.1...v4.6.2) (2018-07-09)
+
+
+### Performance Improvements
+
+* **ui-grid.core:** Remove unnecessary code. ([cfec75c](https://github.com/angular-ui/ui-grid/commit/cfec75c))
+
+
+
+<a name="4.6.1"></a>
+## [4.6.1](https://github.com/angular-ui/ui-grid/compare/v4.6.0...v4.6.1) (2018-07-05)
+
+
+### Bug Fixes
+
+* **exporter:** Handle filters with 3 arguments ([3207b29](https://github.com/angular-ui/ui-grid/commit/3207b29)), closes [#6784](https://github.com/angular-ui/ui-grid/issues/6784)
+* **exporter:** exporterExcelCustomFormatter should return the unmodified docDefinition ([7fc39ad](https://github.com/angular-ui/ui-grid/commit/7fc39ad)), closes [#6774](https://github.com/angular-ui/ui-grid/issues/6774) [#6774](https://github.com/angular-ui/ui-grid/issues/6774)
+* **i18n:** Fix Japanese translation. ([#6781](https://github.com/angular-ui/ui-grid/issues/6781)) ([9ab0a4c](https://github.com/angular-ui/ui-grid/commit/9ab0a4c))
+* **selection:** Fix multiSelect + modifierKeysToMultiSelect ([2bc8c7b](https://github.com/angular-ui/ui-grid/commit/2bc8c7b)), closes [#6793](https://github.com/angular-ui/ui-grid/issues/6793) [#6791](https://github.com/angular-ui/ui-grid/issues/6791)
+* **selection:** Remove focus rows styles. ([a8480a2](https://github.com/angular-ui/ui-grid/commit/a8480a2)), closes [#6782](https://github.com/angular-ui/ui-grid/issues/6782)
+* **validate:** missing getErrorMessages method ([588c868](https://github.com/angular-ui/ui-grid/commit/588c868))
+
+
+### Documentation
+
+* **ui-grid.info:** Clean up API documentation. ([a535bea](https://github.com/angular-ui/ui-grid/commit/a535bea96109540f6ca66f42646321e785f62136))
+* **ui-grid.info:** Added missing documentation. ([71c3db8](https://github.com/angular-ui/ui-grid/commit/71c3db8157159193c1fc7ce310c8c8b48f140760))
+
+
+
+<a name="4.6.0"></a>
+# [4.6.0](https://github.com/angular-ui/ui-grid/compare/v4.5.1...v4.6.0) (2018-06-21)
+
+
+### Bug Fixes
+
+* **gridContainer:** Revert body container id to previous. ([981e9e2](https://github.com/angular-ui/ui-grid/commit/981e9e2)), closes [#6096](https://github.com/angular-ui/ui-grid/issues/6096)
+* **selection:** Selected row style only applied to left container ([ab31e0b](https://github.com/angular-ui/ui-grid/commit/ab31e0b))
+* **uiGridHeaderCell:** Remove unncessary space ([5ea8e54](https://github.com/angular-ui/ui-grid/commit/5ea8e54))
+
+
+### Documentation
+
+* **scrollThreshold:** Add missing documentation details. ([cc0fdb7](https://github.com/angular-ui/ui-grid/commit/cc0fdb7))
+
+
+### Features
+
+* **es-ct:** Add catalan translations. ([f482800](https://github.com/angular-ui/ui-grid/commit/f482800)), closes [#5536](https://github.com/angular-ui/ui-grid/issues/5536)
+* **rs-lat:** Added Serbian translations. ([da57ad1](https://github.com/angular-ui/ui-grid/commit/da57ad1))
+* **i18n:** Add fallback lang support ([0e47f10](https://github.com/angular-ui/ui-grid/commit/0e47f10)), closes [#6396](https://github.com/angular-ui/ui-grid/issues/6396)
+
+
+### BREAKING CHANGES
+
+* **horizontalScrollThreshold:** Removed horizontalScrollThreshold as it is not being used by the grid.
+* **i18n:** getSafeText() will now return [MISSING] + the path to
+the missing property or the fallback value if the property is available
+on the fallback language.
+
+
+
+<a name="4.5.1"></a>
+## [4.5.1](https://github.com/angular-ui/ui-grid/compare/v4.5.0...v4.5.1) (2018-06-18)
+
+
+### Bug Fixes
+
+* **fonts:** Add missing fonts folder to release ([544a483](https://github.com/angular-ui/ui-grid/commit/544a483)), closes [#6759](https://github.com/angular-ui/ui-grid/issues/6759)
+
+
+
+<a name="4.5.0"></a>
+# [4.5.0](https://github.com/angular-ui/ui-grid/compare/v4.4.11...v4.5.0) (2018-06-15)
+
+
+### Bug Fixes
+
+* **fonts:** Change font files path. ([1bd060c](https://github.com/angular-ui/ui-grid/commit/1bd060c)), closes [#3751](https://github.com/angular-ui/ui-grid/issues/3751)
+* **i18n:** Add missing Danish pinning translations [#6731](https://github.com/angular-ui/ui-grid/issues/6731) ([c14def4](https://github.com/angular-ui/ui-grid/commit/c14def4))
+* **i18n:** Add missing sk translations. ([2d6907f](https://github.com/angular-ui/ui-grid/commit/2d6907f))
+* **selection, expandable:** Add pointer cursor css ([faf332e](https://github.com/angular-ui/ui-grid/commit/faf332e))
+* **ui-grid-menu-button.js:**  Click on the menu button item checkbox … ([#6738](https://github.com/angular-ui/ui-grid/issues/6738)) ([c0d27d1](https://github.com/angular-ui/ui-grid/commit/c0d27d1))
+* **ui-grid.core:** Address resizing issues. ([767e022](https://github.com/angular-ui/ui-grid/commit/767e022))
+
+
+### Features
+
+* **expandable:** Enhance the expandable grid feature. ([ec13255](https://github.com/angular-ui/ui-grid/commit/ec13255))
+* **selection:** Enhance the selection feature ([2485652](https://github.com/angular-ui/ui-grid/commit/2485652))
+
+
+### BREAKING CHANGES
+
+* **fonts:** If you take the new CSS and do not relocate the icon files, your icons will likely cease to
+show in the grid.
+
+
+
+<a name="4.4.11"></a>
+## [4.4.11](https://github.com/angular-ui/ui-grid/compare/v4.4.9...v4.4.11) (2018-05-16)
+
+### Features
+
+* **angular.js:** Support Angular 1.7. ([8c6cb51](https://github.com/angular-ui/ui-grid/commit/8c6cb51d3fbcf8bb6e3fc15c8378d9ba7b11a32c))
+
+### Bug Fixes
+
+* **ui-grid-util.js:** Replace angular.uppercase with toUpperCase. ([82033e0](https://github.com/angular-ui/ui-grid/commit/82033e0)), closes [#6729](https://github.com/angular-ui/ui-grid/issues/6729)
+
+
+<a name="4.4.10"></a>
+## [4.4.10](https://github.com/angular-ui/ui-grid/compare/v4.4.9...v4.4.10) (2018-05-15)
+
+
+### Bug Fixes
+
+* **ui-grid-menu-button.js:** Change "Columns:" item to a heading. ([85ad462](https://github.com/angular-ui/ui-grid/commit/85ad462))
+* **ui-grid-util.js:** Replace angular.uppercase and .lowercase with String.toUpperCase and .toLowerC ([a41677a](https://github.com/angular-ui/ui-grid/commit/a41677a)), closes [#6715](https://github.com/angular-ui/ui-grid/issues/6715)
+
+
+
+<a name="4.4.9"></a>
+## [4.4.9](https://github.com/angular-ui/ui-grid/compare/v4.4.7...v4.4.9) (2018-04-30)
+
+
+### Bug Fixes
+
+* **exporter.js:** Eliminate selection column. Add export scale factor for excel and fonts ([d96f43d](https://github.com/angular-ui/ui-grid/commit/d96f43d))
+* **cellnav.js:** Do not trigger edit on undefined event. ([615fe49](https://github.com/angular-ui/ui-grid/commit/615fe49))
+* **Grid.js:** Use scrollbarHeight instead of scrollbarWidth for vertical scroll calculations. ([1b01490](https://github.com/angular-ui/ui-grid/commit/1b01490)), closes [#6653](https://github.com/angular-ui/ui-grid/issues/6653)
+* **selection.js:**
+  * Allow group header selection. ([9718d8b](https://github.com/angular-ui/ui-grid/commit/9718d8b)), closes [#6698](https://github.com/angular-ui/ui-grid/issues/6698)
+  * Check if column is row header before disabling selection. ([dff19a7](https://github.com/angular-ui/ui-grid/commit/dff19a7)), closes [#5239](https://github.com/angular-ui/ui-grid/issues/5239)
+  * getSelectedRows will work on primitive data types. ([39a5439](https://github.com/angular-ui/ui-grid/commit/39a5439)), closes [#6704](https://github.com/angular-ui/ui-grid/issues/6704)
+  * Raise rowSelectionChangedBatch after toggling selectAll flag. ([bff5bb2](https://github.com/angular-ui/ui-grid/commit/bff5bb2)), closes [#5411](https://github.com/angular-ui/ui-grid/issues/5411)
+* **tree-base.js:**
+  * Allow treeIndent to be 0. ([68be14e](https://github.com/angular-ui/ui-grid/commit/68be14e))
+  * Call updateRowHeaderWidth even when no data exists. ([49678eb](https://github.com/angular-ui/ui-grid/commit/49678eb)), closes [#5430](https://github.com/angular-ui/ui-grid/issues/5430)
+
+
+### Features
+
+* **ui-i18n.js:** Allow replacing/customizing specific existing locale strings when using add. ([d6d820f](https://github.com/angular-ui/ui-grid/commit/d6d820f))
+
+
+
+<a name="v4.4.7"></a>
+### v4.4.7 (2018-04-20)
+
+
+#### Bug Fixes
+
+* **exporter.js:**
+  * Eliminate selection column. Add export scale factor for excel and fonts ([bc50dfb0](http://github.com/angular-ui/ng-grid/commit/bc50dfb054ad4a571505051de258eee33539ffe2))
+  * Fix to handle filter args and spaces after filter name (#6681) ([7c2c002b](http://github.com/angular-ui/ng-grid/commit/7c2c002b29f43b46e6ac965d59bd5ff0bef677c8))
+  * Fix export when selection col is hidden. (#6676) ([b971f417](http://github.com/angular-ui/ng-grid/commit/b971f4177cf19666f420eb5f70fbe774c33fd137))
+* **Grid.js:** ScrollIfNecessary does not account for scrollWidth correctly ([16826bf1](http://github.com/angular-ui/ng-grid/commit/16826bf15f9ef72f885545894deddbdef99dcc97))
+* **i18n:** Add missing portuguese translations. ([25fdb473](http://github.com/angular-ui/ng-grid/commit/25fdb4738d6daadc91ffa28294a655d45cfeac74))
+* **uiGridRenderContainer.html:** Prevent duplicate ids in the grid for ADA compliance. ([ecf07c6f](http://github.com/angular-ui/ng-grid/commit/ecf07c6f19b18a87002791d66fe8e85b0e0f0e33))
+
+<a name="v4.4.6"></a>
+### v4.4.6 (2018-04-06)
+
+
+#### Bug Fixes
+
+* **Grid.js:** ScrollIfNecessary will not scroll if percentage has not changed. ([7ed11ecb](http://github.com/angular-ui/ng-grid/commit/7ed11ecb57e9a809af41e36315575486e1ad2b93))
+* **exporter.js:** Exporter will respect headerCellFilter and cellFilter. ([4c632391](http://github.com/angular-ui/ng-grid/commit/4c63239186c73fd3ba1723481ed67618897e9fe4))
+* **footer.less:** Footer column width now matches header column width. ([3134f77b](http://github.com/angular-ui/ng-grid/commit/3134f77b3dc659e172a5cda67ef7c45528a3ea3a))
+* **ui-grid-menu-button.js:** Replace show/hide buttons with a single toggle button. ([a6a26d99](http://github.com/angular-ui/ng-grid/commit/a6a26d997ed7fee102ab89cb863b0a5a40ce895c))
+* **ui-grid-menu.js:** Give bySelector correct parent. ([1972dcc2](http://github.com/angular-ui/ng-grid/commit/1972dcc29a7727f6e66fffdcbe3c5c4240f3e499))
+* **ui-grid.js:** gridOptions.data string value now works again. ([c62b986d](http://github.com/angular-ui/ng-grid/commit/c62b986d14e68f7e6e8f72ceb89666d7b7add749))
+
+<a name="v4.4.5"></a>
+### v4.4.5 (2018-03-31)
+
+
+#### Bug Fixes
+
+* **Grid.js:** scrollToIfNecessary can scroll to last row. ([87c9eed3](http://github.com/angular-ui/ng-grid/commit/87c9eed31c5e3b1b81d60721cd4fad846b0eb5a9))
+* **expandable.js:** Update expandedAll attribute when toggling rows. ([1b080b91](http://github.com/angular-ui/ng-grid/commit/1b080b916798addff1b67985465c6b01a8c5dce7))
+* **footer.less:** Empty footer cells now take the full available height. (#6630) ([dbe3ecd3](http://github.com/angular-ui/ng-grid/commit/dbe3ecd3ccf1d768b8ad3a8adc5bc38676f8542c))
+* **gridClassFactory.js:** Move priority to correct spot. ([842a9b77](http://github.com/angular-ui/ng-grid/commit/842a9b772f6b3f8dc43c614133b8284e991cd0e7))
+* **gridEdit.js:** Move deregister events until event conclusion. ([214f6cc4](http://github.com/angular-ui/ng-grid/commit/214f6cc4aa547c0e027bf7c2c8ce1865f50adddc))
+* **pagination.less:** Correct style pagination in footer info panel. ([5ca555a8](http://github.com/angular-ui/ng-grid/commit/5ca555a81efd12d3411e950c379dd58a4ad23c4f))
+* **selection.js:** When enableSelection is false, row cannot be toggled. ([33260602](http://github.com/angular-ui/ng-grid/commit/33260602609711077637e04614887b3341289cb1))
+* **tree-base.js:** Stop event propagation on click of the row header. ([c2824d5c](http://github.com/angular-ui/ng-grid/commit/c2824d5cbee3cb100291f51d95c09d58fcb4f5a6))
+* **ui-grid-render-container:** Use offsetHeight to avoid sizing issues. ([9927b711](http://github.com/angular-ui/ng-grid/commit/9927b711e037946e52d17fd521600e5c4e9d8b99))
+* **ui-grid.js:** Ignore scrollbar height prior to checking if autoAdjustHeight is needed. ([f9971a5d](http://github.com/angular-ui/ng-grid/commit/f9971a5d19d215c8978f64ecbc349830be6f7d6e))
+
+<a name="v4.4.4"></a>
+### v4.4.4 (2018-03-23)
+
+
+#### Bug Fixes
+
+* **Grid.js:** Select All button should be disabled when no data is present. ([08ec049a](http://github.com/angular-ui/ng-grid/commit/08ec049af25e8ef6f953955a2b2e2f570b29a4b6))
+* **column-resizer:** Disable text selection while resizing columns. ([2cf3e02a](http://github.com/angular-ui/ng-grid/commit/2cf3e02a8a1fe9762b09604cc3dff8bd079bc86d))
+* **filter:** Filter input fits in column without bootstrap ([a63e1f1a](http://github.com/angular-ui/ng-grid/commit/a63e1f1a3daae51feefab9f2b467ddfd922628d0))
+* **pagination.less:** Pagination footer no longer overlaps last row. ([713d3ea9](http://github.com/angular-ui/ng-grid/commit/713d3ea9caadaaa6e24f98ef31a43821bf9065e3))
+* **selection:**
+  * SelectAllRows pays attention to isRowSelectable function. ([0b7304f4](http://github.com/angular-ui/ng-grid/commit/0b7304f40d97343c2f7c249abb82050af7ef40dd))
+  * Center checkmarx in selection row header. ([3f8758aa](http://github.com/angular-ui/ng-grid/commit/3f8758aa76f523fc3a23762e9772095a963d7a65))
+* **styles:** Removed div. from LESS files. ([5a7dabd6](http://github.com/angular-ui/ng-grid/commit/5a7dabd60d13405f4f9a585b45ddf2c660225b82))
+* **ui-grid-column-menu.js:** Added keyboard navigation to column menu (#6629) ([df429208](http://github.com/angular-ui/ng-grid/commit/df4292083397d498594e893746d5975c4998105b))
+
+<a name="v4.4.3"></a>
+### v4.4.3 (2018-03-21)
+
+
+#### Bug Fixes
+
+* **GridColumn:** Respect minimumColumnSize when a valid minWidth is not present ([89c43ef3](http://github.com/angular-ui/ng-grid/commit/89c43ef34f01249c6025f535519ad3899daa0049))
+* **pagination.html:** Limits pagination page number to integers only ([d7eca115](http://github.com/angular-ui/ng-grid/commit/d7eca115da85b0273688855706975eb231c54e6d))
+* **selection.js:** enableFullRowSelection allows enableRowHeaderSelection. ([f77a5b3f](http://github.com/angular-ui/ng-grid/commit/f77a5b3f5092fdc4a3f5d1717855af405acb0d81))
+* **ui-grid-column-menu.js:** Focus on first item in column menu on open. ([43b313fc](http://github.com/angular-ui/ng-grid/commit/43b313fc281a13236c6e6ed3e471a0eb3bf3257f))
+* **ui-grid-util.js:** Comment out log statement. ([6b127e2d](http://github.com/angular-ui/ng-grid/commit/6b127e2d6d50a004cf85dff7ef715bd841b04624))
+
+<a name="v4.4.2"></a>
+### v4.4.2 (2018-03-20)
+
+
+#### Bug Fixes
+
+* **GridRenderContainer.js:** needsHScrollbarPlaceholder accounts for WHEN_NEEDED ([403bf3ee](http://github.com/angular-ui/ng-grid/commit/403bf3ee145be349ca783f5e5cf86a5420b638bf))
+* **i18n:** change some strings in de.js due to typos ([9ebe1168](https://github.com/angular-ui/ui-grid/commit/9ebe116808ff2d56e18bc3623355121a934de080))
+
+<a name="v4.4.1"></a>
+### v4.4.1 (2018-03-16)
+
+
+#### Bug Fixes
+
+* **122_accessibility.ngdoc:** Update angular-aria version. ([faa17fba](http://github.com/angular-ui/ng-grid/commit/faa17fbaea083e9e80d823601c22b81fc4899f14))
+* **pagination.less:** Remove unnecessary underline from pagination styles. ([f3a4086d](http://github.com/angular-ui/ng-grid/commit/f3a4086d8e9509dea5490105b9fbb73ceb96611d))
+* **ui-grid.core.js:** Add missing i18nService to ui-grid.core.js ([06f53d91](http://github.com/angular-ui/ng-grid/commit/06f53d91be8c4219e0dad2027b8717eeb6183f79))
+
+<a name="v4.4.0"></a>
+## v4.4.0 (2018-03-15)
+
+
+#### Features
+
+* **concat.js:** Rename ui-grid.base.js to ui-grid.core.js. ([18c5ffb8](http://github.com/angular-ui/ng-grid/commit/18c5ffb8807122e6045643c73138b9d6c83b5f9e))
+* **i18n:** Separate language files from ui-grid.base.js ([1342f803](http://github.com/angular-ui/ng-grid/commit/1342f8031441647ef8533f66c7141b04bb0fafe6))
+
+
+#### Breaking Changes
+
+* ui-grid.base.js has been rename to ui-grid.core.js. Also, ui-grid.core.js no longer
+contains most of the language files available to UI-Grid. It only contains english as that is the
+default language of the grid. See tutorials for examples.
+ ([18c5ffb8](http://github.com/angular-ui/ng-grid/commit/18c5ffb8807122e6045643c73138b9d6c83b5f9e))
+
+<a name="v4.3.1"></a>
+### v4.3.1 (2018-03-15)
+
+* **release:** Released UI-Grid to NPM and bower ([e90a837](https://github.com/angular-ui/ui-grid/commit/e90a837b7e2414f456a3ec7b5482afe7697f4e29))
+
+<a name="v4.3.0"></a>
+## v4.3.0 (2018-03-14)
+
+
+#### Bug Fixes
+
+* **build:** Remove Safari 7 from tests and switch $digest to "$apply" to add $$hashKey to da ([323fa956](http://github.com/angular-ui/ng-grid/commit/323fa956e26aa858a022449b71d5d79beaac6205))
+* **menus:**
+  * streamline menu positioning ([a83df5bc](http://github.com/angular-ui/ng-grid/commit/a83df5bcec80a38e8566a5385a2639173b7cd00e), closes [#5396](http://github.com/angular-ui/ng-grid/issues/5396), [#5990](http://github.com/angular-ui/ng-grid/issues/5990), [#6085](http://github.com/angular-ui/ng-grid/issues/6085))
+  * Fix menu positioning/animation ([25dbd2ec](http://github.com/angular-ui/ng-grid/commit/25dbd2ec3823e20d5d458903260caf3beed83920), closes [#3436](http://github.com/angular-ui/ng-grid/issues/3436), [#3921](http://github.com/angular-ui/ng-grid/issues/3921), [#3978](http://github.com/angular-ui/ng-grid/issues/3978), [#6587](http://github.com/angular-ui/ng-grid/issues/6587))
+* **selection.js:** Allow selection to work with grouping. ([b21096b2](http://github.com/angular-ui/ng-grid/commit/b21096b2c275e365e561a39a7987a3e290b3ee59))
+* **utils.js:** Remove IE9 from supported browsers list. ([f14da2fc](http://github.com/angular-ui/ng-grid/commit/f14da2fc9995d60bed26fd00ad5c271fd7eac470), closes [#2273](http://github.com/angular-ui/ng-grid/issues/2273), [#2552](http://github.com/angular-ui/ng-grid/issues/2552), [#3593](http://github.com/angular-ui/ng-grid/issues/3593), [#3854](http://github.com/angular-ui/ng-grid/issues/3854), [#4439](http://github.com/angular-ui/ng-grid/issues/4439))
+
+
+#### Features
+
+* **GridRenderContainer:** Added WHEN_NEEDED option back to ui-grid. ([1c1ea72e](http://github.com/angular-ui/ng-grid/commit/1c1ea72e60ac082ce1c746414cb63a469462cc13))
+* **uglify/concat:** Publish multiple files separated by features. ([6d26274](https://github.com/angular-ui/ui-grid/commit/6d26274024a6925a6b89fcaab4ded6173d68169f))
+
+
+#### Breaking Changes
+
+* IE9 and Safari 7 are no longer officially supported.
+
+Closes #2273, #2552, #3593, #3854, #4439
+ ([f14da2fc](http://github.com/angular-ui/ng-grid/commit/f14da2fc9995d60bed26fd00ad5c271fd7eac470))
+
+<a name="v4.2.4"></a>
+### v4.2.4 (2018-02-07)
+
+
+#### Bug Fixes
+
+* **uiGridAutoResize:** Asking for grid $elm sizing in a digest loop always triggers `refresh`, not cond ([835153ce](http://github.com/angular-ui/ng-grid/commit/835153ce256fbeb5f58e20752ca7a4ea35b7a963), closes [#6561](http://github.com/angular-ui/ng-grid/issues/6561))
+
+
+#### Features
+
+* **expandAllButton:** Add ability to hide expand all button. ([343d7116](http://github.com/angular-ui/ng-grid/commit/343d711660e83b47c664e74fb8ec735da06a0a07))
+
+<a name="v4.2.3"></a>
+### v4.2.3 (2018-02-02)
+
+
+#### Bug Fixes
+
+* **exporter:** Fix bug where selection column width was included ([d6aeb166](http://github.com/angular-ui/ng-grid/commit/d6aeb166c9931d6da6f464807e6d6575b6b2addf))
+* **importer.js:** Remove unnecessary on destroy event. ([497a554b](http://github.com/angular-ui/ng-grid/commit/497a554bc01fe1148aa804732804c0b41b0c2ced))
+* **selection.js:** Allow selection in tables that use grouping (#6556) ([f3d2a7f1](http://github.com/angular-ui/ng-grid/commit/f3d2a7f1019d269df567047be901e07523cefcb4))
+* **ui-grid-header-cell:** Improved styles with grid menu. ([c6b8d3bc](http://github.com/angular-ui/ng-grid/commit/c6b8d3bcf5095e7543603e1622499aefa2d5c0a4))
+
+
+#### Features
+
+* **i18n:** Add Arabic translation (#6551) ([24be1fb6](http://github.com/angular-ui/ng-grid/commit/24be1fb6f78bc9c5c55af0b88dfa0ef87967c395))
+
 <a name="v4.2.2"></a>
 ### v4.2.2 (2018-01-17)
 
@@ -144,6 +475,13 @@
 * **ui-grid.info:**
   * Removing unknown broken link. ([2968158c](http://github.com/angular-ui/ng-grid/commit/2968158c5fec17576fe88f8be6e366ef7330fc98))
   * Fix broken customizer url on homepage (#5976) ([209fc1d6](http://github.com/angular-ui/ng-grid/commit/209fc1d68769fe1918d88f3accf5cd6e48f64acb))
+* **cellnav.js:** trim text of DOM element before checking ([84ea8fa](https://github.com/angular-ui/ui-grid/commit/84ea8fa8db9c9979ee46452a773ae7da028d0dc2))
+* **gridEdit.js:** verify that the keyCode is greater than zero ([5ccd7f3](https://github.com/angular-ui/ui-grid/commit/5ccd7f3645e20f1f514f2a549cf831b63e35aadf))
+* **Grid.js:**
+  * Fixed grid height growing indefinitely with auto-resize. ([553d72b](https://github.com/angular-ui/ui-grid/commit/553d72bc4153dc5945978c9f7ece8bcb0040cccc))
+  * "selectAll" header sync with the actual selection state of the row. ([aae3f9d](https://github.com/angular-ui/ui-grid/commit/aae3f9d965b1e39a32d1471fcd025afeb3d006b6))
+* **ui-grid-menu:** Menu Items's title can now be a function. ([df10da9](https://github.com/angular-ui/ui-grid/commit/df10da916eb52ffe5636041b56eb88242ecfdd0d))
+* **selection.less:** Focus on selection mark of unselected rows was hardly visible. ([d1aee28](https://github.com/angular-ui/ui-grid/commit/d1aee28b01782b42061e2599c5b285399ec144fa))
 
 
 #### Features
@@ -152,6 +490,12 @@
   * output aria text for cells that come from selection feature - works on IE with J ([151f32b9](http://github.com/angular-ui/ng-grid/commit/151f32b904145893c9e6d51c8350814be70b5dc8))
   * output aria text for cells that come from selection feature ([6d951b2a](http://github.com/angular-ui/ng-grid/commit/6d951b2a7ac33f53b8512a6f3ad5d5498cd079c9))
 * **gridEdit:** Pass triggerEvent to cellEditableCondition fn call ([219ea716](http://github.com/angular-ui/ng-grid/commit/219ea7165ff1f6030c7d125550020181fa1fc3ae))
+
+
+#### Breaking Changes
+
+* Menu Items's title should now be a function
+ ([df10da91](https://github.com/angular-ui/ui-grid/commit/df10da916eb52ffe5636041b56eb88242ecfdd0d#diff-3baddc9493adec1550b73c74401d4b46))
 
 <a name="v4.0.6"></a>
 ### v4.0.6 (2017-06-14)
@@ -196,6 +540,7 @@
 * **protractor:** Fixing npm so protractor can be installed and run locally. ([724df352](http://github.com/angular-ui/ng-grid/commit/724df3520ccc1d5f585fcc42508a537935875da2))
 * **shell.js:** Adding windows support. ([5e438643](http://github.com/angular-ui/ng-grid/commit/5e438643ea06e06455e91f9d0368f0021b8ef9c8))
 * **sort:** Fixing sorting priority aria-label ([a364886f](http://github.com/angular-ui/ng-grid/commit/a364886f37a2685500643d5df05b4c936dcd42a5))
+* **ui-grid-menu.js:** Removed log debug statement (#5388) ([7efe5304](https://github.com/angular-ui/ui-grid/commit/7efe5304f015714c8ba742bafe9a96ba80971622))
 
 
 #### Features
@@ -211,11 +556,7 @@
 
 * **6123:** Allowing selection and tree-base to build columns. ([2ea9a06e](http://github.com/angular-ui/ng-grid/commit/2ea9a06e594601cc44947a997f08bce628e813f4))
 * **flatEntityAccess:**  getCellDisplayValue now returns the correct value. ([ba77c875](http://github.com/angular-ui/ng-grid/commit/ba77c8750431236ff4f729fe8a77eb44cbbfc9b7))
-
-
-#### Features
-
-* **japanese:** Update japanese translation. ([47e78d1](https://github.com/angular-ui/ui-grid/commit/47e78d16710a96033c692f800c5bb4874f694fc8))
+* **japanese:** Update japanese translation. ([47e78d1](https://github.com/angular-ui/ui-grid/commit/47e78d16710a96033c692f800c5bb4874f694fc8)), closes [#6089](https://github.com/angular-ui/ui-grid/issues/6089)
 
 <a name="v4.0.3"></a>
 ### v4.0.3 (2017-03-24)

@@ -47,21 +47,30 @@
    *
    *  @description Services for i18n
    */
-  module.service('i18nService', ['$log', 'i18nConstants', '$rootScope',
-    function ($log, i18nConstants, $rootScope) {
+  module.service('i18nService', ['$log', '$parse', 'i18nConstants', '$rootScope',
+    function ($log, $parse, i18nConstants, $rootScope) {
 
       var langCache = {
         _langs: {},
         current: null,
+        fallback: i18nConstants.DEFAULT_LANG,
         get: function (lang) {
-          return this._langs[lang.toLowerCase()];
+          var self = this,
+            fallbackLang = self.getFallbackLang();
+
+          if (lang !== self.fallback) {
+            return angular.extend({}, self._langs[fallbackLang],
+              self._langs[lang.toLowerCase()]);
+          }
+
+          return self._langs[lang.toLowerCase()];
         },
         add: function (lang, strings) {
           var lower = lang.toLowerCase();
           if (!this._langs[lower]) {
             this._langs[lower] = {};
           }
-          angular.extend(this._langs[lower], strings);
+          angular.merge(this._langs[lower], strings);
         },
         getAllLangs: function () {
           var langs = [];
@@ -78,8 +87,14 @@
         setCurrent: function (lang) {
           this.current = lang.toLowerCase();
         },
+        setFallback: function (lang) {
+          this.fallback = lang.toLowerCase();
+        },
         getCurrentLang: function () {
           return this.current;
+        },
+        getFallbackLang: function () {
+          return this.fallback.toLowerCase();
         }
       };
 
@@ -91,7 +106,7 @@
          * @methodOf ui.grid.i18n.service:i18nService
          * @description  Adds the languages and strings to the cache. Decorate this service to
          * add more translation strings
-         * @param {string} lang language to add
+         * @param {string} langs languages to add
          * @param {object} stringMaps of strings to add grouped by property names
          * @example
          * <pre>
@@ -157,26 +172,16 @@
          * </pre>
          */
         getSafeText: function (path, lang) {
-          var language = lang || service.getCurrentLang();
-          var trans = langCache.get(language);
+          var language = lang || service.getCurrentLang(),
+            trans = langCache.get(language),
+            missing = i18nConstants.MISSING + path,
+            getter = $parse(path);
 
           if (!trans) {
-            return i18nConstants.MISSING;
+            return missing;
           }
 
-          var paths = path.split('.');
-          var current = trans;
-
-          for (var i = 0; i < paths.length; ++i) {
-            if (current[paths[i]] === undefined || current[paths[i]] === null) {
-              return i18nConstants.MISSING;
-            } else {
-              current = current[paths[i]];
-            }
-          }
-
-          return current;
-
+          return getter(trans) || missing;
         },
 
         /**
@@ -191,11 +196,28 @@
          * i18nService.setCurrentLang('fr');
          * </pre>
          */
-
         setCurrentLang: function (lang) {
           if (lang) {
             langCache.setCurrent(lang);
             $rootScope.$broadcast(i18nConstants.UPDATE_EVENT);
+          }
+        },
+
+        /**
+         * @ngdoc service
+         * @name setFallbackLang
+         * @methodOf ui.grid.i18n.service:i18nService
+         * @description sets the fallback language to use in the application.
+         * The default fallback language is english.
+         * @param {string} lang to set
+         * @example
+         * <pre>
+         * i18nService.setFallbackLang('en');
+         * </pre>
+         */
+        setFallbackLang: function (lang) {
+          if (lang) {
+            langCache.setFallback(lang);
           }
         },
 
@@ -212,15 +234,23 @@
             langCache.setCurrent(lang);
           }
           return lang;
-        }
+        },
 
+        /**
+         * @ngdoc service
+         * @name getFallbackLang
+         * @methodOf ui.grid.i18n.service:i18nService
+         * @description returns the fallback language used in the application
+         */
+        getFallbackLang: function () {
+          return langCache.getFallbackLang();
+        }
       };
 
       return service;
-
     }]);
 
-  var localeDirective = function (i18nService, i18nConstants) {
+  function localeDirective(i18nService, i18nConstants) {
     return {
       compile: function () {
         return {
@@ -241,64 +271,67 @@
         };
       }
     };
-  };
+  }
 
   module.directive('uiI18n', ['i18nService', 'i18nConstants', localeDirective]);
 
   // directive syntax
-  var uitDirective = function ($parse, i18nService, i18nConstants) {
+  function uitDirective(i18nService, i18nConstants) {
     return {
       restrict: 'EA',
       compile: function () {
         return {
           pre: function ($scope, $elm, $attrs) {
-            var alias1 = DIRECTIVE_ALIASES[0],
-              alias2 = DIRECTIVE_ALIASES[1];
-            var token = $attrs[alias1] || $attrs[alias2] || $elm.html();
-            var missing = i18nConstants.MISSING + token;
-            var observer;
+            var listener, observer, prop,
+              alias1 = DIRECTIVE_ALIASES[0],
+              alias2 = DIRECTIVE_ALIASES[1],
+              token = $attrs[alias1] || $attrs[alias2] || $elm.html();
+
+            function translateToken(property) {
+              var safeText = i18nService.getSafeText(property);
+
+              $elm.html(safeText);
+            }
+
             if ($attrs.$$observers) {
-              var prop = $attrs[alias1] ? alias1 : alias2;
+              prop = $attrs[alias1] ? alias1 : alias2;
               observer = $attrs.$observe(prop, function (result) {
                 if (result) {
-                  $elm.html($parse(result)(i18nService.getCurrentLang()) || missing);
+                  translateToken(result);
                 }
               });
             }
-            var getter = $parse(token);
-            var listener = $scope.$on(i18nConstants.UPDATE_EVENT, function (evt) {
+
+            listener = $scope.$on(i18nConstants.UPDATE_EVENT, function() {
               if (observer) {
                 observer($attrs[alias1] || $attrs[alias2]);
               } else {
                 // set text based on i18n current language
-                $elm.html(getter(i18nService.get()) || missing);
+                translateToken(token);
               }
             });
             $scope.$on('$destroy', listener);
 
-            $elm.html(getter(i18nService.get()) || missing);
+            translateToken(token);
           }
         };
       }
     };
-  };
+  }
 
-  angular.forEach( DIRECTIVE_ALIASES, function ( alias ) {
-    module.directive( alias, ['$parse', 'i18nService', 'i18nConstants', uitDirective] );
-  } );
+  angular.forEach(DIRECTIVE_ALIASES, function ( alias ) {
+    module.directive(alias, ['i18nService', 'i18nConstants', uitDirective]);
+  });
 
   // optional filter syntax
-  var uitFilter = function ($parse, i18nService, i18nConstants) {
-    return function (data) {
-      var getter = $parse(data);
+  function uitFilter(i18nService) {
+    return function (data, lang) {
       // set text based on i18n current language
-      return getter(i18nService.get()) || i18nConstants.MISSING + data;
+      return i18nService.getSafeText(data, lang);
     };
-  };
+  }
 
-  angular.forEach( FILTER_ALIASES, function ( alias ) {
-    module.filter( alias, ['$parse', 'i18nService', 'i18nConstants', uitFilter] );
-  } );
-
-
+  angular.forEach(FILTER_ALIASES, function ( alias ) {
+    module.filter(alias, ['i18nService', uitFilter]);
+  });
 })();

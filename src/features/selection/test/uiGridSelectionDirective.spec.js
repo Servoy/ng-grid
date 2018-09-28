@@ -19,7 +19,7 @@ describe('ui.grid.selection uiGridSelectionDirective', function() {
     document.body.appendChild(elm[0]);
     $compile(elm)(parentScope);
     $timeout.flush();
-    parentScope.$digest();
+    parentScope.$apply();
 
     return elm;
   }
@@ -66,7 +66,7 @@ describe('ui.grid.selection uiGridSelectionDirective', function() {
   it('should add cellFocus to the row header columnDef"', function() {
     for (var i = 0; i < gridCtrl.grid.columns.length; i++) {
       var currentCol = gridCtrl.grid.columns[i];
-      if (currentCol.name === "selectionRowHeaderCol"){
+      if (currentCol.name === "selectionRowHeaderCol") {
         expect(currentCol.colDef.allowCellFocus).toBe(true);
       }
     }
@@ -89,7 +89,7 @@ describe('ui.grid.selection uiGridSelectionDirective', function() {
       parentScope.options.enableFiltering = false;
       elm.controller('uiGrid').grid.api.core.notifyDataChange( uiGridConstants.dataChange.COLUMN );
       $timeout.flush();
-      parentScope.$digest();
+      parentScope.$apply();
 
       var noFilteringHeight = $(elm).find('.ui-grid-header').height();
 

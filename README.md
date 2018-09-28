@@ -5,9 +5,10 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/ui-grid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm](https://img.shields.io/npm/dm/angular-ui-grid.svg)](https://www.npmjs.com/package/angular-ui-grid)
-[![npm](https://img.shields.io/npm/dt/angular-ui-grid.svg)](https://www.npmjs.com/package/angular-ui-grid)
-[![OpenCollective](https://opencollective.com/ui-grid/backers/badge.svg)](#backers) 
+[![devDependencies Status](https://david-dm.org/angular-ui/ui-grid/dev-status.svg)](https://david-dm.org/angular-ui/ui-grid?type=dev)
+[![OpenCollective](https://opencollective.com/ui-grid/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/ui-grid/sponsors/badge.svg)](#sponsors)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fangular-ui%2Fui-grid.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fangular-ui%2Fui-grid?ref=badge_shield)
 
 [![Selenium Test Status](https://saucelabs.com/browser-matrix/nggrid.svg)](https://saucelabs.com/u/nggrid)
 
@@ -17,7 +18,7 @@ Head to http://ui-grid.info for documentation and tutorials. Join https://gitter
 
 We're always looking for new contributors, for pro-level contribution guidelines look at [Contributor.md](CONTRIBUTING.md), if you're more of a first-timer with open source (or just need a refresher), look at [First Time Open Source Contributor.md](FIRST_TIMER.md), also look at [Developer.md](DEVELOPER.md)
 
-Need Some Inspiration? Have a look at our open [PRs Plz!](https://github.com/angular-ui/ui-grid/issues?q=is%3Aopen+is%3Aissue+label%3A%22PRs+plz%21%22) issues.
+Need Some Inspiration? Have a look at our open [good first issue](https://github.com/angular-ui/ui-grid/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) issues, or the [help wanted](https://github.com/angular-ui/ui-grid/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) issues if you are looking for more of a challenge
 
 # Installing
 
@@ -52,7 +53,7 @@ You can use [rawgit.com](https://rawgit.com/)'s cdn url to access the files in t
 
 # Angular Compatibility
 
-UI-Grid is currently compatible with Angular versions ranging from 1.4.x to 1.6.x.
+UI-Grid is currently compatible with Angular versions ranging from 1.4.x to 1.7.x.
 
 # Feature Stability
 
@@ -88,14 +89,14 @@ like your plugin added to that list, please [edit the tutorial page](misc/tutori
 
 # Building
 
-The first step is to install dependencies. `git` is required and must be available from the command line. If you don't have it, install git and ensure that the executable is in your path. If you are new to git, the easiest way to install is by installing the github client. 
+The first step is to install dependencies. `git` is required and must be available from the command line. If you don't have it, install git and ensure that the executable is in your path. If you are new to git, the easiest way to install is by installing the github client.
 
 The `grunt` command line utility is also required.
 
     # If you don't already have the grunt-cli installed:
     > npm install -g grunt-cli
 
-With `git` and `grunt-cli` installed you simply run the following commands to install all dependencies. 
+With `git` and `grunt-cli` installed you simply run the following commands to install all dependencies.
 
     > npm install
     > grunt install
@@ -109,7 +110,7 @@ The default grunt task will test and build files into `dist/`
 Development "watch" task. This will automatically rebuild from source on changes, reload Gruntfile.js if you change it, and rebuild the docs.
 
 1. A server on localhost:9002 serving whichever directory you checked out, with livereload. Navigate to http://localhost:9002/misc/demo to see the [demo files](http://localhost:9002/misc/demo/grid-directive.html).
-2. A server on localhost:9003 serving the ./docs directory. These are the docs built from source with a custom grunt-ngdocs that should work with Angular 1.6.x.
+2. A server on localhost:9003 serving the ./docs directory. These are the docs built from source with grunt-uidocs-generator.
 
 
 
@@ -164,9 +165,9 @@ The full list of SauceLabs browsers can be seen by running `grunt saucebrowsers`
 
 # What Happened to 2.x?
 
-As of the 3.0 release, 2.x is officially deprecated. There will be no further releases. If for some reason you need to find the 2.x source please see the [2.x branch](https://github.com/angular-ui/ui-grid/tree/2.x).
+As of the 3.0 release, 2.x is officially deprecated. There will be no further releases. If for some reason you need to find the 2.x source please see the [2.x branch](https://github.com/angular-ui/ng-grid-legacy).
 
-The 2.x docs are here: [http://angular-ui.github.io/ui-grid/](http://angular-ui.github.io/ui-grid/).
+The 2.x docs are here: [https://github.com/angular-ui/ng-grid-legacy/wiki](https://github.com/angular-ui/ng-grid-legacy/wiki).
 
 # Repository Rename
 
@@ -252,5 +253,3 @@ Become a sponsor and get your logo on our website and on our README on Github wi
 <a href="https://opencollective.com/ui-grid/sponsor/27/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/27/avatar.svg"></a>
 <a href="https://opencollective.com/ui-grid/sponsor/28/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/28/avatar.svg"></a>
 <a href="https://opencollective.com/ui-grid/sponsor/29/website" target="_blank"><img src="https://opencollective.com/ui-grid/sponsor/29/avatar.svg"></a>
-
-

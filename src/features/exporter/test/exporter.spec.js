@@ -34,7 +34,7 @@ describe('ui.grid.exporter', function() {
 
       grid = gridClassFactory.createGrid({});
       grid.options.columnDefs = [
-        {field: 'col1', name: 'col1', displayName: 'Col1', width: 50, pinnedLeft: true},
+        {field: 'col1', name: 'col1', displayName: 'Col1', width: 50, headerCellFilter: 'uppercase', pinnedLeft: true},
         {field: 'col2', name: 'col2', displayName: 'Col2', width: '*', type: 'number', cellFilter: 'uppercase'},
         {field: 'col3', name: 'col3', displayName: 'Col3', width: 100},
         {field: 'col4', name: 'col4', displayName: 'Col4', width: 200}
@@ -46,7 +46,7 @@ describe('ui.grid.exporter', function() {
       uiGridPinningService.initializeGrid(grid);
       var data = [];
       for (var i = 0; i < 3; i++) {
-        data.push({col1:'a_'+i, col2:'b_'+i, col3:'c_'+i, col4:'d_'+i});
+        data.push({col1: 'a_'+i, col2: 'b_'+i, col3: 'c_'+i, col4: 'd_'+i});
       }
       grid.options.data = data;
 
@@ -118,7 +118,7 @@ describe('ui.grid.exporter', function() {
     describe('defaultGridOptions', function() {
       var options;
 
-      beforeEach(function () {
+      beforeEach(function() {
         options = {};
       });
 
@@ -130,6 +130,8 @@ describe('ui.grid.exporter', function() {
           exporterCsvColumnSeparator: ',',
           exporterCsvFilename: 'download.csv',
           exporterPdfFilename: 'download.pdf',
+          exporterExcelFilename: 'download.xlsx',
+          exporterExcelSheetName: 'Sheet1',
           exporterOlderExcelCompatibility: false,
           exporterIsExcelCompatible: false,
           exporterPdfDefaultStyle: {fontSize: 11},
@@ -150,6 +152,9 @@ describe('ui.grid.exporter', function() {
           exporterMenuExcel: true,
           exporterFieldCallback: jasmine.any(Function),
           exporterFieldFormatCallback: jasmine.any(Function),
+          exporterExcelCustomFormatters: jasmine.any(Function),
+          exporterExcelHeader: jasmine.any(Function),
+          exporterColumnScaleFactor: 3.5,
           exporterFieldApplyFilters: false,
           exporterAllDataFn: null,
           exporterSuppressColumns: [],
@@ -173,6 +178,8 @@ describe('ui.grid.exporter', function() {
           exporterCsvColumnSeparator: ',',
           exporterCsvFilename: 'download.csv',
           exporterPdfFilename: 'download.pdf',
+          exporterExcelFilename: 'download.xlsx',
+          exporterExcelSheetName: 'Sheet1',
           exporterOlderExcelCompatibility: false,
           exporterIsExcelCompatible: false,
           exporterPdfDefaultStyle : { fontSize : 11 },
@@ -193,6 +200,9 @@ describe('ui.grid.exporter', function() {
           exporterMenuExcel: true,
           exporterFieldCallback: jasmine.any(Function),
           exporterFieldFormatCallback: jasmine.any(Function),
+          exporterExcelCustomFormatters: jasmine.any(Function),
+          exporterExcelHeader: jasmine.any(Function),
+          exporterColumnScaleFactor: 3.5,
           exporterFieldApplyFilters: false,
           exporterAllDataFn: null,
           exporterSuppressColumns: [],
@@ -229,14 +239,15 @@ describe('ui.grid.exporter', function() {
           exporterMenuExcel: false,
           exporterFieldCallback: callback,
           exporterFieldFormatCallback: callback,
+          exporterExcelCustomFormatters: callback,
           exporterFieldApplyFilters: false,
           exporterAllDataPromise: callback,
           exporterSuppressColumns: [ 'buttons' ],
-          exporterExcelCustomFormatters: callback,
           exporterExcelFilename: 'myFile.xlsx',
           exporterExcelSheetName: 'Sheet1',
           exporterExcelHeader: 'My Header',
           exporterExcelFooter: 'My Footer',
+          exporterColumnScaleFactor: 3.5,
           exporterMenuItemOrder: 75
         };
         uiGridExporterService.defaultGridOptions(options);
@@ -274,6 +285,7 @@ describe('ui.grid.exporter', function() {
           exporterExcelSheetName: 'Sheet1',
           exporterExcelHeader: 'My Header',
           exporterExcelFooter: 'My Footer',
+          exporterColumnScaleFactor: 3.5,
           exporterMenuItemOrder: 75,
           exporterAllDataFn: callback
         });
@@ -781,7 +793,7 @@ describe('ui.grid.exporter', function() {
     describe('getColumnHeaders', function() {
       it('gets visible headers', function() {
         expect(uiGridExporterService.getColumnHeaders(grid, uiGridExporterConstants.VISIBLE)).toEqual([
-          {name: 'col1', displayName: 'Col1', width: 50, align: 'left'},
+          {name: 'col1', displayName: 'COL1', width: 50, align: 'left'},
           {name: 'col2', displayName: 'Col2', width: '*', align: 'right'},
           {name: 'col4', displayName: 'Col4', width: 200, align: 'left'}
         ]);
@@ -789,7 +801,7 @@ describe('ui.grid.exporter', function() {
 
       it('gets all headers', function() {
         expect(uiGridExporterService.getColumnHeaders(grid, uiGridExporterConstants.ALL)).toEqual([
-          {name: 'col1', displayName: 'Col1', width: 50, align: 'left'},
+          {name: 'col1', displayName: 'COL1', width: 50, align: 'left'},
           {name: 'col2', displayName: 'Col2', width: '*', align: 'right'},
           {name: 'col3', displayName: 'Col3', width: 100, align: 'left'},
           {name: 'col4', displayName: 'Col4', width: 200, align: 'left'}
@@ -815,7 +827,7 @@ describe('ui.grid.exporter', function() {
       });
 
       it('gets all headers using headerFilter', function() {
-        grid.options.exporterHeaderFilter = function( displayName ){ return 'mapped_' + displayName; };
+        grid.options.exporterHeaderFilter = function( displayName ) { return 'mapped_' + displayName; };
 
         expect(uiGridExporterService.getColumnHeaders(grid, uiGridExporterConstants.ALL)).toEqual([
           {name: 'col1', displayName: 'mapped_Col1', width: 50, align: 'left'},
@@ -827,7 +839,7 @@ describe('ui.grid.exporter', function() {
 
       it('gets all headers using headerFilter, passing name not displayName', function() {
         grid.options.exporterHeaderFilterUseName = true;
-        grid.options.exporterHeaderFilter = function( name ){ return 'mapped_' + name; };
+        grid.options.exporterHeaderFilter = function( name ) { return 'mapped_' + name; };
 
         expect(uiGridExporterService.getColumnHeaders(grid, uiGridExporterConstants.ALL)).toEqual([
           {name: 'col1', displayName: 'mapped_col1', width: 50, align: 'left'},
@@ -844,19 +856,19 @@ describe('ui.grid.exporter', function() {
       beforeEach(function() {
         aNode = {
           children: [
-            {children: [{col1:'a_1', col2:'b_1', col3:'c_1', children: []}]},
-            {col1:'a_2', col2:'b_2', col3:'c_2', children: []},
-            {col1:'a_3', col2:'b_3', col3:'c_3', children: []},
-            {col1:'a_4', col2:'b_4', col3:'c_4', children: []}
+            {children: [{col1: 'a_1', col2: 'b_1', col3: 'c_1', children: []}]},
+            {col1: 'a_2', col2: 'b_2', col3: 'c_2', children: []},
+            {col1: 'a_3', col2: 'b_3', col3: 'c_3', children: []},
+            {col1: 'a_4', col2: 'b_4', col3: 'c_4', children: []}
           ]
         };
       });
       it('should return rows from the node passed in', function() {
         expect(uiGridExporterService.getRowsFromNode(aNode)).toEqual([
-          {col1:'a_1', col2:'b_1', col3:'c_1', children: []},
-          {col1:'a_2', col2:'b_2', col3:'c_2', children: []},
-          {col1:'a_3', col2:'b_3', col3:'c_3', children: []},
-          {col1:'a_4', col2:'b_4', col3:'c_4', children: []}
+          {col1: 'a_1', col2: 'b_1', col3: 'c_1', children: []},
+          {col1: 'a_2', col2: 'b_2', col3: 'c_2', children: []},
+          {col1: 'a_3', col2: 'b_3', col3: 'c_3', children: []},
+          {col1: 'a_4', col2: 'b_4', col3: 'c_4', children: []}
         ]);
       });
     });
@@ -875,10 +887,10 @@ describe('ui.grid.exporter', function() {
           numberLevels: 1,
           tree: [{
             children: [
-              {children: [{row:'a_1', children: []}]},
-              {row:'a_2', children: []},
-              {row:'a_3', children: []},
-              {row:'a_4', children: []}
+              {children: [{row: 'a_1', children: []}]},
+              {row: 'a_2', children: []},
+              {row: 'a_3', children: []},
+              {row: 'a_4', children: []}
             ]
           }]
         };
@@ -889,48 +901,48 @@ describe('ui.grid.exporter', function() {
     describe('getData', function() {
       it('gets all rows and columns', function() {
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.ALL, uiGridExporterConstants.ALL)).toEqual([
-          [ {value: 'a_0'}, {value: 'b_0'}, {value: 'c_0'}, {value: 'd_0'} ],
-          [ {value: 'a_1'}, {value: 'b_1'}, {value: 'c_1'}, {value: 'd_1'} ],
-          [ {value: 'a_2'}, {value: 'b_2'}, {value: 'c_2'}, {value: 'd_2'} ]
+          [ {value: 'a_0'}, {value: 'B_0'}, {value: 'c_0'}, {value: 'd_0'} ],
+          [ {value: 'a_1'}, {value: 'B_1'}, {value: 'c_1'}, {value: 'd_1'} ],
+          [ {value: 'a_2'}, {value: 'B_2'}, {value: 'c_2'}, {value: 'd_2'} ]
         ]);
       });
 
       it('ignores selection row header column', function() {
         grid.columns[0].colDef.exporterSuppressExport = true;
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.ALL, uiGridExporterConstants.ALL)).toEqual([
-          [ {value: 'b_0'}, {value: 'c_0'}, {value: 'd_0'} ],
-          [ {value: 'b_1'}, {value: 'c_1'}, {value: 'd_1'} ],
-          [ {value: 'b_2'}, {value: 'c_2'}, {value: 'd_2'} ]
+          [ {value: 'B_0'}, {value: 'c_0'}, {value: 'd_0'} ],
+          [ {value: 'B_1'}, {value: 'c_1'}, {value: 'd_1'} ],
+          [ {value: 'B_2'}, {value: 'c_2'}, {value: 'd_2'} ]
         ]);
       });
 
       it('ignores suppressed column', function() {
         grid.options.exporterSuppressColumns = [ 'col1' ];
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.ALL, uiGridExporterConstants.ALL)).toEqual([
-          [ {value: 'b_0'}, {value: 'c_0'}, {value: 'd_0'} ],
-          [ {value: 'b_1'}, {value: 'c_1'}, {value: 'd_1'} ],
-          [ {value: 'b_2'}, {value: 'c_2'}, {value: 'd_2'} ]
+          [ {value: 'B_0'}, {value: 'c_0'}, {value: 'd_0'} ],
+          [ {value: 'B_1'}, {value: 'c_1'}, {value: 'd_1'} ],
+          [ {value: 'B_2'}, {value: 'c_2'}, {value: 'd_2'} ]
         ]);
       });
 
       it('ignores disabled row', function() {
         grid.rows[1].exporterEnableExporting = false;
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.ALL, uiGridExporterConstants.ALL)).toEqual([
-          [ {value: 'a_0'}, {value: 'b_0'}, {value: 'c_0'}, {value: 'd_0'} ],
-          [ {value: 'a_2'}, {value: 'b_2'}, {value: 'c_2'}, {value: 'd_2'} ]
+          [ {value: 'a_0'}, {value: 'B_0'}, {value: 'c_0'}, {value: 'd_0'} ],
+          [ {value: 'a_2'}, {value: 'B_2'}, {value: 'c_2'}, {value: 'd_2'} ]
         ]);
       });
 
       it('gets visible rows and columns', function() {
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.VISIBLE, uiGridExporterConstants.VISIBLE)).toEqual([
-          [ {value: 'a_0'}, {value: 'b_0'}, {value: 'd_0'} ],
-          [ {value: 'a_2'}, {value: 'b_2'}, {value: 'd_2'} ]
+          [ {value: 'a_0'}, {value: 'B_0'}, {value: 'd_0'} ],
+          [ {value: 'a_2'}, {value: 'B_2'}, {value: 'd_2'} ]
         ]);
       });
 
       it('gets selected rows and visible columns', function() {
         expect(uiGridExporterService.getData(grid, uiGridExporterConstants.SELECTED, uiGridExporterConstants.VISIBLE)).toEqual([
-          [ {value: 'a_0'}, {value: 'b_0'}, {value: 'd_0'} ]
+          [ {value: 'a_0'}, {value: 'B_0'}, {value: 'd_0'} ]
         ]);
       });
 
@@ -943,8 +955,8 @@ describe('ui.grid.exporter', function() {
       });
 
       it('maps data using objectCallback', function() {
-        grid.options.exporterFieldCallback = function( grid, row, col, value ){
-          if ( col.name === 'col2' ){
+        grid.options.exporterFieldCallback = function( grid, row, col, value ) {
+          if ( col.name === 'col2' ) {
             return 'translated';
           } else {
             return value;

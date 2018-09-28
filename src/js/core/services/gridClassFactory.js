@@ -28,14 +28,14 @@
           if (grid.options.rowTemplate) {
             var rowTemplateFnPromise = $q.defer();
             grid.getRowTemplateFn = rowTemplateFnPromise.promise;
-            
+
             gridUtil.getTemplate(grid.options.rowTemplate)
               .then(
                 function (template) {
                   var rowTemplateFn = $compile(template);
                   rowTemplateFnPromise.resolve(rowTemplateFn);
                 },
-                function (res) {
+                function () {
                   // Todo handle response error here?
                   throw new Error("Couldn't fetch/use row template '" + grid.options.rowTemplate + "'");
                 }).catch(angular.noop);
@@ -50,10 +50,10 @@
           grid.registerRowsProcessor(function allRowsVisible(rows) {
             rows.forEach(function (row) {
               row.evaluateRowVisibility( true );
-            }, 50);
+            });
 
             return rows;
-          });
+          }, 50);
 
           grid.registerColumnsProcessor(function applyColumnVisibility(columns) {
             columns.forEach(function (column) {
@@ -92,7 +92,7 @@
 
           // Abstracts the standard template processing we do for every template type.
           var processTemplate = function( templateType, providedType, defaultTemplate, filterType, tooltipType ) {
-            if ( !colDef[templateType] ){
+            if ( !colDef[templateType] ) {
               col[providedType] = defaultTemplate;
             } else {
               col[providedType] = colDef[templateType];
@@ -102,14 +102,16 @@
               .then(
                 function (template) {
                   if ( angular.isFunction(template) ) { template = template(); }
-                  var tooltipCall = ( tooltipType === 'cellTooltip' ) ? 'col.cellTooltip(row,col)' : 'col.headerTooltip(col)';
-                  if ( tooltipType && col[tooltipType] === false ){
+                  var tooltipCall = ( tooltipType === 'cellTooltip' )
+                      ? 'col.cellTooltip(row,col)'
+                      : 'col.headerTooltip(col)';
+                  if ( tooltipType && col[tooltipType] === false ) {
                     template = template.replace(uiGridConstants.TOOLTIP, '');
-                  } else if ( tooltipType && col[tooltipType] ){
+                  } else if ( tooltipType && col[tooltipType] ) {
                     template = template.replace(uiGridConstants.TOOLTIP, 'title="{{' + tooltipCall + ' CUSTOM_FILTERS }}"');
                   }
 
-                  if ( filterType ){
+                  if ( filterType ) {
                     col[templateType] = template.replace(uiGridConstants.CUSTOM_FILTERS, function() {
                       return col[filterType] ? "|" + col[filterType] : "";
                     });
@@ -117,7 +119,7 @@
                     col[templateType] = template;
                   }
                 },
-                function (res) {
+                function () {
                   throw new Error("Couldn't fetch/use colDef." + templateType + " '" + colDef[templateType] + "'");
                 }).catch(angular.noop);
 
@@ -195,11 +197,11 @@
               .then(function (template) {
                 // Compile the template
                 var rowTemplateFn = $compile(template);
-                
+
                 // Resolve the compiled template function promise
                 perRowTemplateFnPromise.resolve(rowTemplateFn);
               },
-              function (res) {
+              function () {
                 // Todo handle response error here?
                 throw new Error("Couldn't fetch/use row template '" + row.rowTemplate + "'");
               });
@@ -209,7 +211,7 @@
         }
       };
 
-      //class definitions (moved to separate factories)
+      // class definitions (moved to separate factories)
 
       return service;
     }]);
