@@ -331,9 +331,10 @@
                 getSelectedRows: function () {
                   return service.getSelectedRows(grid).map(function (gridRow) {
                     return gridRow.entity;
-                  }).filter(function (entity) {
+                  });// reverted this code until https://github.com/angular-ui/ui-grid/issues/6860 is fixed
+                  /*.filter(function (entity) {
                     return entity.hasOwnProperty('$$hashKey') || !angular.isObject(entity);
-                  });
+                  });*/
                 },
                 /**
                  * @ngdoc function
